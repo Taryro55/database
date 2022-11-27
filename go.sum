@@ -1,2 +1,4 @@
 github.com/BurntSushi/toml v1.2.1 h1:9F2/+DoOYIOksmaJFPw1tGFy1eDnIJXg+UHjuD8lTak=
 github.com/BurntSushi/toml v1.2.1/go.mod h1:CxXYINrC8qIiEnFrOxCa7Jy5BFHlXnUU2pbicEuybxQ=
+github.com/gen2brain/raylib-go/raylib v0.0.0-20221126205955-18ffd04b2a85 h1:JO/XrQRiXtPNLnBmU/U0eOckdYX/bpwz9aXjV7risrY=
+github.com/gen2brain/raylib-go/raylib v0.0.0-20221126205955-18ffd04b2a85/go.mod h1:+NbsqGlEQqGqrsgJFF5Yj2dkvn0ML2SQb8RqM2hJsPU=
