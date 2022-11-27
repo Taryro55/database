@@ -2,9 +2,9 @@ package main
 
 
 var (
-	fPath = "//studentDB.toml"
-	studentSlice []Student
-		studentIdSlice 			[]int
+	fPath 						= "//studentDB.toml"
+	studentMap 					map[string]Student
+	studentSlice 				[]Student
 		studentNameMap 			map[int]string
 		studentLastNameMap 		map[int]string
 		studentAgeMap 			map[int]int

@@ -6,6 +6,7 @@ import (
 	"math/rand"
 	"os"
 	"path"
+	"strconv"
 	"time"
 	// rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -68,10 +69,10 @@ func quit() {
 }
 
 func createMaps(s []Student, r *rand.Rand) {
-	studentNameMap, studentLastNameMap, studentAgeMap, studentCitizenMap, studentGradeMap = make(map[int]string), make(map[int]string), make(map[int]int), make(map[int]bool), make(map[int]int)
-	for x := range s {
+	studentMap, studentNameMap, studentLastNameMap, studentAgeMap, studentCitizenMap, studentGradeMap = make(map[string]Student), make(map[int]string), make(map[int]string), make(map[int]int), make(map[int]bool), make(map[int]int)
+	for x, y := range s {
 		id := r.Intn(5000)
-		studentIdSlice = append(studentIdSlice, id)
+		studentMap[strconv.FormatInt(int64(id), 10)] = y
 		studentNameMap[id] = s[x].FName
 		studentLastNameMap[id] = s[x].LName
 		studentAgeMap[id] = s[x].Age
@@ -80,21 +81,50 @@ func createMaps(s []Student, r *rand.Rand) {
 	}
 }
 
+/*
+Recives
+	value to search for
+	sorted array of ints to search
+	indMin
+
+Returns the index value of the desired value
+*/
+func binarySearch(v int, s []int) int {
+	indMin, indMax := 0, len(s)-1
+
+	for indMin < indMax {
+		indMid := int(indMin + (indMax-indMin)/2)
+
+		if !(s[indMid] >= v) {
+			indMin = indMid + 1
+		} else {
+			indMax = indMid
+		}
+
+	}
+
+	return indMin
+}
+
+func searchPrompt() {
+	z := ""
+	fmt.Scanln(">> Search: ", &z)
+}
+
 func main() {
-	a := load()
-	fmt.Println(a)
+	a := read()
+	fmt.Println("read ", a)
 	tempRngStudents()
-	write(studentSlice)
+	write(studentMap)
 
-	// fmt.Println(studentNameMap, studentLastNameMap)
 
-	// fmt.Println("\n", studentAgeMap, "\n", studentGradeMap, "\n", studentCitizenMap, "\n")
-
-	// fmt.Println("age: ")
-	// printMapMod(bSortInt(studentAgeMap))
-	// fmt.Println("grade: ")
-	// printMapMod(bSortInt(studentGradeMap))
-	// fmt.Println("pr: ")
-	// fmt.Println(bSortBool(studentCitizenMap))
+	// ! Proof of work for binary search
+	searchVal := 45
+	slicetoSearch := []int{1, 3, 6, 10, 15, 21, 28, 36, 45, 55}
+	x := binarySearch(searchVal, slicetoSearch)
+		
+	if searchVal == slicetoSearch[x] {
+		fmt.Println("The value ", searchVal, " is on index ", x)
+	}
 
 }

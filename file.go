@@ -8,34 +8,24 @@ import (
 	"github.com/pelletier/go-toml"
 )
 
-// func open() *os.File {
-// 	f, err := os.OpenFile(fPath, os.O_RDWR|os.O_APPEND, 0660);
-// 	if err != nil {
-// 		// failed to open the file
-// 		log.Fatal(err)
-// 	}
-// 	return f
-// }
+func write(s map[string]Student) {
 
-func write(s []Student) {
-	for _, v := range s {
-		fmt.Println(v)
-		buf, err := toml.Marshal(v)
+	fmt.Println(s)
+	buf, err := toml.Marshal(s)
 
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		fmt.Println(string(buf))
-		err1 := os.WriteFile("studentDB.toml", buf, 0644)
-		if err1 != nil {
-			log.Fatal(err1)
-		} 
+	if err != nil {
+		log.Fatal(err)
 	}
+
+	fmt.Println(string(buf))
+	err1 := os.WriteFile("studentDB.toml", buf, 0644)
+	if err1 != nil {
+		log.Fatal(err1)
+	} 
 }
 
-func load() Student {
-	s := Student{}
+func read() map[string]Student {
+	s := make(map[string]Student)
 	buf, err := os.ReadFile("studentDB.toml")
 	if err != nil {
 		log.Fatal(err)
