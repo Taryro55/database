@@ -1,9 +1,8 @@
 package main
 
-import "os"
 
 var (
-	file *os.File
+	fPath = "//studentDB.toml"
 	studentSlice []Student
 		studentIdSlice 			[]int
 		studentNameMap 			map[int]string
@@ -19,9 +18,9 @@ type MapMod struct {
 	val []int
 }
 type Student struct {
-	fName   string
-	lName   string
-	age     int
-	grade   int
-	citizen bool
+	FName   string
+	LName   string
+	Age     int
+	Grade   int
+	Citizen bool
 }
