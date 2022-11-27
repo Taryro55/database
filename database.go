@@ -31,25 +31,15 @@ func quit() {
 	}
 }
 
-func bSortInt(s []int) []int {
-	for y := 0; y < len(s)-1; y++ {
-		for v := 0; v < len(s)-y-1; v++ {
-			if (s[v] > s[v+1]) {
-				s[v], s[v+1] = s[v+1], s[v]
-			}
-		}
-	}
-	return s
-}
 
-func createSlices(s []Student) {
+func createMaps(s []Student, r *rand.Rand) {
+	studentAgeMap, studentCitizenMap, studentGradeMap = make(map[int]int), make(map[int]bool), make(map[int]int)
 	for x := range s {
-		studentIdSlice = append(studentIdSlice, s[x].id)
-		studentNameSlice = append(studentNameSlice, s[x].fName)
-		studentLastNameSlice = append(studentLastNameSlice, s[x].lName)
-		studentAgeSlice = append(studentAgeSlice, s[x].age)
-		studentGradeSlice = append(studentGradeSlice, s[x].grade)
-		studentCitizenSlice = append(studentCitizenSlice, s[x].citizen)
+		id := r.Intn(5000)
+		studentIdSlice = append(studentIdSlice, id)
+		studentAgeMap[id] = s[x].age
+		studentGradeMap[id] = s[x].grade
+		studentCitizenMap[id] = s[x].citizen
 	}
 }
 
@@ -57,9 +47,8 @@ func main() {
 	s := rand.NewSource(time.Now().UnixNano())
 	r := rand.New(s)
 
-	for x := 0; x < 50; x++ {
+	for x := 0; x < 10; x++ {
 		y := Student{
-			r.Intn(5000),
 			"x",
 			"y",
 			r.Intn(99),
@@ -67,15 +56,23 @@ func main() {
 			true}
 		studentSlice = append(studentSlice, y)
 	}
-	for c := range studentSlice {
-		fmt.Println(studentSlice[c])
-	}
 
-	createSlices(studentSlice)
+	createMaps(studentSlice, r)
 
-	fmt.Println(bSortInt(studentIdSlice))
-	fmt.Println(bSortInt(studentAgeSlice))
-	fmt.Println(bSortInt(studentGradeSlice))
+
+
+	// fmt.Println("\n", studentAgeMap, "\n", studentGradeMap, "\n")
+	
+	// fmt.Println("age: ")
+	// printMapMod(bSortInt(studentAgeMap))
+	// fmt.Println("grade: ")
+	// printMapMod(bSortInt(studentGradeMap))
+	fmt.Println("pr: ")
+	fmt.Println(boolMapToIntMap(studentCitizenMap))
+
+	printMapMod(bSortInt(boolMapToIntMap(studentCitizenMap)))
+
+	
 
 	// db := load()
 	// printDB(db)
