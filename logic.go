@@ -27,36 +27,56 @@ func printMapMod(m MapMod) {
 func bSortInt(m map[int]int) MapMod {
 	inv := make(map[int]int, len(m))
 	s1, s2 := make([]int, len(m)), make([]int, len(m))
+	sKeys, i := make([]int, len(m)), 0
 	
 	for k, v := range m { 
 		inv[v] = k
 	}
-	fmt.Println(len(m),m, inv)
 
-
-	sKeys, i := make([]int, len(inv)), 0
 	for k := range inv {
 		sKeys[i] = k
 		i++
 	}
+
 	bSorted := bubbleSort(sKeys)
 
 	for _, i := range bSorted {
 		s1, s2 = append(s1, inv[i]), append(s2, i)
 	}
-	mapMod := MapMod{s1, s2}
 	
-	return mapMod
+	return MapMod{s1, s2}
 }
 
-func boolMapToIntMap(m map[int]bool) map[int]int {
-	intMap := make(map[int]int, len(m))
+
+/*
+Returns a MapMod with the key = all the ids && value = index number of the list 
+where the switch from false to true happens.
+*/
+func bSortBool(m map[int]bool) MapMod {
+	l, l1, l2 := make([]int, 0), make([]int, 0), make([]int, 0)
+	mm := MapMod{}
+
 	for k, v := range m {
-		if v {
-			intMap[k] = 1
-		} else if !v {
-			intMap[k] = 0
+		if !v {
+			l1 = append(l1, k)
 		}
 	}
-	return intMap
+
+	divIndx := []int{len(l1)}
+	
+	for k, v := range m {
+		if v {
+			l2 = append(l2, k)
+		}
+	}
+
+	l1 = bubbleSort(l1)
+	l2 = bubbleSort(l2)
+	l = append(l, l1...)
+	l = append(l, l2...)
+
+	mm.key = l
+	mm.val = divIndx
+
+	return mm
 }

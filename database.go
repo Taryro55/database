@@ -22,6 +22,32 @@ func init() {
 		}
 		file = f
 	}
+
+
+	// ! Temp rng Students generator
+
+	s := rand.NewSource(time.Now().UnixNano())
+	r := rand.New(s)
+	b := false
+
+	for x := 0; x < 10; x++ {
+		randBool := r.Intn(2)
+		if randBool == 0 {
+			b = false
+		} else if randBool == 1 {
+			b = true
+		}
+		y := Student{
+			"x",
+			"y",
+			r.Intn(99),
+			r.Intn(12),
+			b}
+		studentSlice = append(studentSlice, y)
+	}
+
+	createMaps(studentSlice, r)
+
 }
 
 func quit() {
@@ -44,45 +70,17 @@ func createMaps(s []Student, r *rand.Rand) {
 }
 
 func main() {
-	s := rand.NewSource(time.Now().UnixNano())
-	r := rand.New(s)
-
-	for x := 0; x < 10; x++ {
-		y := Student{
-			"x",
-			"y",
-			r.Intn(99),
-			r.Intn(12),
-			true}
-		studentSlice = append(studentSlice, y)
-	}
-
-	createMaps(studentSlice, r)
-
-
-
-	// fmt.Println("\n", studentAgeMap, "\n", studentGradeMap, "\n")
 	
-	// fmt.Println("age: ")
-	// printMapMod(bSortInt(studentAgeMap))
-	// fmt.Println("grade: ")
-	// printMapMod(bSortInt(studentGradeMap))
+
+
+
+	fmt.Println("\n", studentAgeMap, "\n", studentGradeMap, "\n", studentCitizenMap, "\n")
+	
+	fmt.Println("age: ")
+	printMapMod(bSortInt(studentAgeMap))
+	fmt.Println("grade: ")
+	printMapMod(bSortInt(studentGradeMap))
 	fmt.Println("pr: ")
-	fmt.Println(boolMapToIntMap(studentCitizenMap))
-
-	printMapMod(bSortInt(boolMapToIntMap(studentCitizenMap)))
-
+	fmt.Println(bSortBool(studentCitizenMap))
 	
-
-	// db := load()
-	// printDB(db)
-	// print the current values (starting values would be nothing)
-	// have an add function
-	// asks for everything and adds that to a Student struct, then it adds it to an array, and to a toml
-	// have a remove func
-	// asks for id to remove and edits the toml
-	// have a refresh func
-	// re-reads the toml file.
-
-	// IFF using raylib, have a click on an area to sort by that
 }
