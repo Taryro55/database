@@ -25,8 +25,7 @@ func init() {
 	}
 
 
-	// ! Temp rng Students generator
-
+	// ! Temp rng 4 Students
 	s := rand.NewSource(time.Now().UnixNano())
 	r := rand.New(s)
 	b := false
@@ -46,8 +45,8 @@ func init() {
 			b}
 		studentSlice = append(studentSlice, y)
 	}
-
 	createMaps(studentSlice, r)
+	// ! End of Temp rng 4 students
 
 }
 

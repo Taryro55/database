@@ -15,3 +15,23 @@ git clone
 go get .
 go run .
 ```
+
+## Progress
+> **FrontEnd**
+>
+>> Idea     ✓
+>> GUI      X
+>> Popups   X
+>
+>
+>
+> **Backend**
+>
+>> Working datatypes
+>>>
+>>> Bool            ✓
+>>> Int             ✓
+>>> Str             X
+>>
+>> Binary Search    X
+>> Store to TOML    X
