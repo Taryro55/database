@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math"
 	"strconv"
 
@@ -52,9 +53,6 @@ func render() {
 	collsX := getCollsX()
 
 	for i, v := range sliceOfSecondLane {
-		if i > len(sliceOfSecondLane) || i > len(collsX) {
-			break
-		}
 		rl.DrawText(v, collsX[i], 153, 30, rl.White)
 	}
 
@@ -76,7 +74,7 @@ func render() {
 	//drawColl(studentNameSlice, 250)
 
 	for i, slice := range studentSliceOfSlices {
-		if i > len(slice) || i > len(collsX) {
+		if i > 5 {
 			break
 		}
 		drawColl(slice, collsX[i])
@@ -85,9 +83,10 @@ func render() {
 }
 
 func getCollsX() []int32 {
-	tSlice := make([]int32, 5)
-	for x := 0; x > 6; x++ {
+	tSlice := []int32{}
+	for x := 0; x < 6; x++ {
 		y := int32(quadFunc(float64(x), 6.25, -73.519, 263.889, -42.811, 70.198))
+		fmt.Println("A ", y)
 		tSlice = append(tSlice, y)
 	}
 	return tSlice
