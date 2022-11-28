@@ -1,6 +1,11 @@
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"image/color"
+
+	rl "github.com/gen2brain/raylib-go/raylib"
+)
 
 func bubbleSort(s []int) []int {
 	for y := 0; y < len(s)-1; y++ {
@@ -28,8 +33,8 @@ func bSortInt(m map[int]int) MapMod {
 	inv := make(map[int]int, len(m))
 	s1, s2 := make([]int, len(m)), make([]int, len(m))
 	sKeys, i := make([]int, len(m)), 0
-	
-	for k, v := range m { 
+
+	for k, v := range m {
 		inv[v] = k
 	}
 
@@ -43,13 +48,12 @@ func bSortInt(m map[int]int) MapMod {
 	for _, i := range bSorted {
 		s1, s2 = append(s1, inv[i]), append(s2, i)
 	}
-	
+
 	return MapMod{s1, s2}
 }
 
-
 /*
-Returns a MapMod with the key = all the ids && value = index number of the list 
+Returns a MapMod with the key = all the ids && value = index number of the list
 where the switch from false to true happens.
 */
 func bSortBool(m map[int]bool) MapMod {
@@ -63,7 +67,7 @@ func bSortBool(m map[int]bool) MapMod {
 	}
 
 	divIndx := []int{len(l1)}
-	
+
 	for k, v := range m {
 		if v {
 			l2 = append(l2, k)
@@ -79,4 +83,38 @@ func bSortBool(m map[int]bool) MapMod {
 	mm.val = divIndx
 
 	return mm
+}
+
+func ParseHexColor(s string) (c color.RGBA, err error) {
+	c.A = 0xff
+	switch len(s) {
+	case 7:
+		_, err = fmt.Sscanf(s, "#%02x%02x%02x", &c.R, &c.G, &c.B)
+	case 4:
+		_, err = fmt.Sscanf(s, "#%1x%1x%1x", &c.R, &c.G, &c.B)
+		// Double the hex digits:
+		c.R *= 17
+		c.G *= 17
+		c.B *= 17
+	default:
+		err = fmt.Errorf("invalid length, must be 7 or 4")
+
+	}
+	return
+}
+
+
+
+func scroll(s []string) []string {
+	if rl.GetMouseWheelMove() > 0 {
+		o, s = s[0], s[1:]
+		s = append(s, o)
+	} else if rl.GetMouseWheelMove() < 0 {
+		o, s = s[len(s)-1], s[:len(s)-1]
+		s = append(s, "" /* use the zero value of the element type */)
+		copy(s[0+1:], s[0:])
+		s[0] = o
+	}
+
+	return s
 }

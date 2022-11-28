@@ -1,10 +1,20 @@
 package main
 
+import rl "github.com/gen2brain/raylib-go/raylib"
 
 var (
-	fPath 						= "//studentDB.toml"
-	studentMap 					map[string]Student
+	readedMap					map[string]Student
+	fPath 					  = "//studentDB.toml"
+	
 	studentSlice 				[]Student
+		studentNameSlice 		[]string
+		studentLastNameSlice 	[]string	
+		studentAgeSlice 		[]string
+		studentGradeSlice 		[]string
+		studentCitizenSlice 	[]string
+	studentSliceOfSlices		[][]string
+	
+	studentMap 					map[string]Student
 		studentNameMap 			map[int]string
 		studentLastNameMap 		map[int]string
 		studentAgeMap 			map[int]int
@@ -13,14 +23,34 @@ var (
 
 )
 
+const (
+	HEIGHT       = int32(768)
+	WINDOW_TITLE = "School DB"
+	RAND = 5
+)
+
+var (
+	exec 					  =	true
+	height = HEIGHT
+	width = (height / 9) * 16
+	offsetX = width * 2 / 100
+	offsetY = height * 3 / 100
+	recBackground rl.Rectangle
+	recForegound rl.Rectangle
+
+	o string
+	y int32
+	p []string
+)
+
 type MapMod struct {
-	key []int
-	val []int
+	key 						[]int
+	val 						[]int
 }
 type Student struct {
-	FName   string
-	LName   string
-	Age     int
-	Grade   int
-	Citizen bool
+	FName   					string
+	LName   					string
+	Age     					int
+	Grade  						int
+	Citizen 					bool
 }

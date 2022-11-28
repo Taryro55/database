@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"os"
 
@@ -10,18 +9,16 @@ import (
 
 func write(s map[string]Student) {
 
-	fmt.Println(s)
 	buf, err := toml.Marshal(s)
 
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	fmt.Println(string(buf))
 	err1 := os.WriteFile("studentDB.toml", buf, 0644)
 	if err1 != nil {
 		log.Fatal(err1)
-	} 
+	}
 }
 
 func read() map[string]Student {
@@ -33,7 +30,7 @@ func read() map[string]Student {
 	err1 := toml.Unmarshal(buf, &s)
 	if err1 != nil {
 		log.Fatal(err1)
-  	}
+	}
 
 	return s
 }
