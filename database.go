@@ -46,13 +46,26 @@ Recives a slice of Student
 func createMaps(s []Student, r *rand.Rand) {
 	studentMap, studentNameMap, studentLastNameMap, studentAgeMap, studentCitizenMap, studentGradeMap = make(map[string]Student), make(map[int]string), make(map[int]string), make(map[int]int), make(map[int]bool), make(map[int]int)
 	for x, y := range s {
-		id := r.Intn(99_000_000 - 10_000_000)+ 10_000_000 // Only 8 digit ids
+		id := r.Intn(9_999_999-1_000_000) + 1_000_000 // Only 8 digit ids
 		studentMap[strconv.FormatInt(int64(id), 10)] = y
 		studentNameMap[id] = s[x].FName
 		studentLastNameMap[id] = s[x].LName
 		studentAgeMap[id] = s[x].Age
 		studentGradeMap[id] = s[x].Grade
 		studentCitizenMap[id] = s[x].Citizen
+	}
+}
+func createSlices() {
+	for k, v := range readedMap {
+		if len(studentIdSlice) == len(readedMap) {
+			break
+		}
+		studentIdSlice = append(studentIdSlice, k)
+		studentNameSlice = append(studentNameSlice, v.FName)
+		studentLastNameSlice = append(studentLastNameSlice, v.LName)
+		studentAgeSlice = append(studentAgeSlice, strconv.FormatInt(int64(v.Age), 10))
+		studentGradeSlice = append(studentGradeSlice, strconv.FormatInt(int64(v.Grade), 10))
+		studentCitizenSlice = append(studentCitizenSlice, strconv.FormatBool(v.Citizen))
 	}
 }
 
@@ -74,19 +87,28 @@ func binarySearch(v int, s []int) int {
 
 	}
 
-	return indMin
+	if v == s[indMin] {
+		return indMin
+	} else {
+		return -1
+	}
+
 }
 
 func main() {
 	readedMap = read()
 	tempRngStudents()
-	write(studentMap)
+	createSlices()
+	// write(studentMap)
+	fmt.Println("\033[H\033[2J")
+
 
 	for exec {
-		fmt.Println(rl.GetMouseX(), rl.GetMouseY())
+		// fmt.Println(rl.GetCharPressed())
 
+		// fmt.Println(rl.GetMouseX(), rl.GetMouseY())
 		update()
 		render()
-
+		loops++
 	}
 }
