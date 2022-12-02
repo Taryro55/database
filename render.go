@@ -114,7 +114,7 @@ func firstRow() {
 			key := rl.GetKeyPressed()
 			for key > 0 {
 
-				if inBetween(int(key), 48, 58) && (letterCount < 9) {
+				if inBetween(int(key), 48, 58) && (letterCount <= 7) {
 					letterCount++
 					inputText = append(inputText, int(key))
 				}
@@ -141,7 +141,13 @@ func firstRow() {
 
 		if onInputBox {
 			rl.DrawRectangleLines(int32(textBox.X), int32(textBox.Y), int32(textBox.Width), int32(textBox.Height), rl.Red)
+			if letterCount <= 7 {
+				if framesCounter/20%2 == 0 {
+					rl.DrawText("_", int32(textBox.X) + 8 + rl.MeasureText(unixSliceToStr(inputText), 40), int32(textBox.Y) + 12, 40, rl.Maroon)
+				}
+			}
 		}
+
 	}
 
 	// * Add
