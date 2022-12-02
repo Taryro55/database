@@ -60,6 +60,7 @@ func createSlices() {
 		if len(studentIdSlice) == len(readedMap) {
 			break
 		}
+		fmt.Println(k)
 		studentIdSlice = append(studentIdSlice, k)
 		studentNameSlice = append(studentNameSlice, v.FName)
 		studentLastNameSlice = append(studentLastNameSlice, v.LName)
@@ -74,6 +75,7 @@ Recives value to search for and a sorted array of ints to search in.
 Returns the index value of the desired value.
 */
 func binarySearch(v int, s []int) int {
+
 	indMin, indMax := 0, len(s)-1
 
 	for indMin < indMax {
@@ -86,6 +88,7 @@ func binarySearch(v int, s []int) int {
 		}
 
 	}
+	// fmt.Println(v, s[indMin], s)
 
 	if v == s[indMin] {
 		return indMin
@@ -101,12 +104,12 @@ func main() {
 	createSlices()
 	// write(studentMap)
 	fmt.Println("\033[H\033[2J")
-
+	// f := []int{3274709,4469402,5906400,7196425,7900458}
 
 	for exec {
-		// fmt.Println(rl.GetCharPressed())
-
 		// fmt.Println(rl.GetMouseX(), rl.GetMouseY())
+		// fmt.Println(binarySearch(4469402, f))
+
 		update()
 		render()
 		loops++

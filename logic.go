@@ -136,11 +136,10 @@ func scroll(s []string) []string {
 }
 
 func button(posx, posy, width, height int32) bool {
-	if rl.IsMouseButtonPressed(0) &&
-		(posx < rl.GetMouseX()) &&
+	if ((posx < rl.GetMouseX()) &&
 		(rl.GetMouseX() < width) &&
 		(posy < rl.GetMouseY()) &&
-		(rl.GetMouseY() < height) {
+		(rl.GetMouseY() < height)) {
 		return true
 	}
 	return false
@@ -155,6 +154,15 @@ func strToIntSlice(s []string) []int {
 	return r
 }
 
+func intToStrSlice(s []int) []string {
+	r := make([]string, 0)
+	for _, v := range s {
+		d := strconv.FormatInt(int64(v), 10)
+		r = append(r, d)
+	}
+	return r
+}
+
 func intSliceToStr(s []int) string {
 	r := ""
 	for _, v := range s {
@@ -164,15 +172,20 @@ func intSliceToStr(s []int) string {
 	return r
 }
 
-func intUnixSliceToInt(s []int) int {
+func unixSliceToStr(s []int) string {
 	str := ""
 	for _, v := range s {
-		v = unixToInt(v)
-		w := strconv.FormatInt(int64(v), 10)
-		str = str + w
+		if inBetween(v, 48, 58) {
+			v = unixToInt(v)
+			w := strconv.FormatInt(int64(v), 10)
+			str = str + w
+		} else if inBetween(v, 65, 90) {
+			o = unixToStr(v)
+			str = str + o
+		}
 	}
-	i, _ := strconv.Atoi(str)
-	return i
+	return str
+
 }
 
 func unixToInt(s int) int {
@@ -202,13 +215,22 @@ func inBetween(x int, a, b int) bool {
 	}
 }
 
+func isIntSlice(s []int) bool {
+	for _, v := range inputText {
+		if !inBetween(v, 48, 58) {
+			return false
+		}
+	}
+	return true
+}
+
 func search(searchFor int) {
-	index := binarySearch(searchFor, strToIntSlice(studentIdSlice))
+	searchInSorted := bubbleSort(strToIntSlice(studentIdSlice))
+	studentIdSlice = intToStrSlice(searchInSorted)
+	index := binarySearch(searchFor, searchInSorted)
 	indexVal := studentIdSlice[index]
 	if studentIdSlice[0] != indexVal {
-		studentIdSlice = studentIdSlice[:len(studentIdSlice)-1]
-		studentIdSlice = append(studentIdSlice, "")
-		copy(studentIdSlice[0+1:], studentIdSlice[0:])
+		studentIdSlice[index] = studentIdSlice[0]
 		studentIdSlice[0] = indexVal
 	}
 }

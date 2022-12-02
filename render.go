@@ -1,8 +1,6 @@
 package main
 
 import (
-	// "fmt"
-	"fmt"
 	"math"
 	"strconv"
 
@@ -20,6 +18,13 @@ func update() {
 		onInputBox = false
 	}
 
+	if mainMenuCooldown.Pressed && mainMenuCooldown.Loops+7 == loops {
+		mainMenuCooldown.Pressed = false
+		searchMenu = false
+		letterCount = 0
+		inputText = []int{}
+		rl.SetMouseCursor(0)
+	}
 	if searchCooldown.Pressed && searchCooldown.Loops+7 == loops {
 		searchCooldown.Pressed = false
 	}
@@ -33,17 +38,20 @@ func update() {
 		modCooldown.Pressed = false
 	}
 
-	if showInputBox && rl.IsKeyPressed(rl.KeyEnter) {
-		showInputBox = false
-		search(intUnixSliceToInt(inputText))
+	if searchMenu && rl.IsKeyPressed(rl.KeyEnter) {
+		searchMenu = false
+
+		// if conversion to int != err, means its int, so it can be searched
+		searchFor, _ := strconv.Atoi(unixSliceToStr(inputText))
+		search(searchFor)
+		// search(unixSliceToStr(strToIntSlice(inputText)))
+
 		letterCount = 0
 		inputText = []int{}
 		rl.SetMouseCursor(0)
 	}
-	fmt.Println(inputText, letterCount)
 
-	// fmt.Println(intUnixSliceToInt(inputText), letterCount)
-
+	// fmt.Println(inputText, letterCount, strconv.FormatInt(int64(unixSliceToStr(inputText)), 10))
 
 	recBackground = rl.Rectangle{
 		X:      float32(offsetX),
@@ -76,22 +84,29 @@ func render() {
 }
 
 func firstRow() {
-	rl.DrawText("Students", 65, 100, 37, rl.White)
 
-	// * Search ID
-	if !button(570, 98, 730, 130) && !searchCooldown.Pressed {
-		rl.DrawText("? Search ID", 575, 104, 32, rl.White)
-	} else if button(570, 98, 730, 130) || searchCooldown.Pressed {
-		rl.DrawText("? Search ID", 575, 104, 32, cPrimary)
+	if !button(60, 98, 230, 130) && !mainMenuCooldown.Pressed {
+		rl.DrawText("Students", 65, 100, 37, rl.White)
+	} else if button(60, 98, 230, 130) || mainMenuCooldown.Pressed {
+		rl.DrawText("Students", 65, 100, 37, cPrimary)
 
-		if !searchCooldown.Pressed {
-			searchCooldown = Cooldown{true, secsSinceStart, loops}
-
-			showInputBox = true
-
+		if !mainMenuCooldown.Pressed && rl.IsMouseButtonPressed(0) {
+			mainMenuCooldown = Cooldown{true, secsSinceStart, loops}
 		}
 	}
-	if showInputBox {
+
+	// * Search ID
+	if !button(570, 98, 775, 130) && !searchCooldown.Pressed {
+		rl.DrawText("? Search ID", 575, 104, 32, rl.White)
+	} else if button(570, 98, 775, 130) || searchCooldown.Pressed {
+		rl.DrawText("? Search ID", 575, 104, 32, cPrimary)
+
+		if !searchCooldown.Pressed && rl.IsMouseButtonPressed(0) {
+			searchCooldown = Cooldown{true, secsSinceStart, loops}
+			searchMenu = true
+		}
+	}
+	if searchMenu {
 
 		if onInputBox {
 			rl.SetMouseCursor(2)
@@ -99,7 +114,7 @@ func firstRow() {
 			key := rl.GetKeyPressed()
 			for key > 0 {
 
-				if (key >= 32) && (key <= 125) && (letterCount < 9) {
+				if inBetween(int(key), 48, 58) && (letterCount < 9) {
 					letterCount++
 					inputText = append(inputText, int(key))
 				}
@@ -122,8 +137,7 @@ func firstRow() {
 		}
 
 		rl.DrawRectangleRec(textBox, rl.LightGray)
-		a := strconv.FormatInt(int64(intUnixSliceToInt(inputText)), 10)
-		rl.DrawText(a, 300, 200, 30, rl.White)
+		rl.DrawText(unixSliceToStr(inputText), textBox.ToInt32().X, textBox.ToInt32().Y, 50, rl.White)
 
 		if onInputBox {
 			rl.DrawRectangleLines(int32(textBox.X), int32(textBox.Y), int32(textBox.Width), int32(textBox.Height), rl.Red)
@@ -135,7 +149,7 @@ func firstRow() {
 		rl.DrawText("+ Add", 875, 104, 32, rl.White)
 	} else if button(870, 98, 970, 130) || addCooldown.Pressed {
 		rl.DrawText("+ Add", 875, 104, 32, cPrimary)
-		if !addCooldown.Pressed {
+		if !addCooldown.Pressed && rl.IsMouseButtonPressed(0) {
 			addCooldown = Cooldown{true, secsSinceStart, loops}
 		}
 	}
@@ -145,7 +159,7 @@ func firstRow() {
 		rl.DrawText("- Del", 1000, 104, 32, rl.White)
 	} else if button(990, 98, 1080, 130) || delCooldown.Pressed {
 		rl.DrawText("- Del", 1000, 104, 32, cPrimary)
-		if !delCooldown.Pressed {
+		if !delCooldown.Pressed && rl.IsMouseButtonPressed(0) {
 			delCooldown = Cooldown{true, secsSinceStart, loops}
 		}
 	}
@@ -154,10 +168,10 @@ func firstRow() {
 	if !button(1115, 98, 1230, 130) && !modCooldown.Pressed {
 		rl.DrawText("% Mod", 1125, 104, 32, rl.White)
 	} else if button(1115, 98, 1230, 130) || modCooldown.Pressed {
-		if !modCooldown.Pressed {
+		rl.DrawText("% Mod", 1125, 104, 32, cPrimary)
+		if !modCooldown.Pressed && rl.IsMouseButtonPressed(0) {
 			modCooldown = Cooldown{true, secsSinceStart, loops}
 		}
-		rl.DrawText("% Mod", 1125, 104, 32, cPrimary)
 	}
 }
 
@@ -172,7 +186,7 @@ func otherRows() {
 
 	rl.DrawLineEx(rl.Vector2{55, 190}, rl.Vector2{float32(width), 190}, 3, cBackground)
 
-	if !showInputBox {
+	if !searchMenu {
 		studentIdSlice = drawColl(studentIdSlice, collsX[0])
 		studentNameSlice = drawColl(studentNameSlice, collsX[1])
 		studentLastNameSlice = drawColl(studentLastNameSlice, collsX[2])
