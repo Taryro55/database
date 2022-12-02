@@ -12,16 +12,12 @@ func update() {
 	y = 200
 	secsSinceStart = int(math.Round(float64(loops / 60)))
 
-	if rl.CheckCollisionPointRec(rl.GetMousePosition(), textBox) {
-		onInputBox = true
-	} else if !rl.CheckCollisionPointRec(rl.GetMousePosition(), textBox) {
-		onInputBox = false
-	}
+	
 
 	if mainMenuCooldown.Pressed && mainMenuCooldown.Loops+7 == loops {
 		mainMenuCooldown.Pressed = false
 		searchMenu = false
-		letterCount = 0
+		// letterCount = 0
 		inputText = []int{}
 		rl.SetMouseCursor(0)
 	}
@@ -46,7 +42,7 @@ func update() {
 		search(searchFor)
 		// search(unixSliceToStr(strToIntSlice(inputText)))
 
-		letterCount = 0
+		// letterCount = 0
 		inputText = []int{}
 		rl.SetMouseCursor(0)
 	}
@@ -105,49 +101,7 @@ func firstRow() {
 			searchCooldown = Cooldown{true, secsSinceStart, loops}
 			searchMenu = true
 		}
-	}
-	if searchMenu {
-
-		if onInputBox {
-			rl.SetMouseCursor(2)
-
-			key := rl.GetKeyPressed()
-			for key > 0 {
-
-				if inBetween(int(key), 48, 58) && (letterCount <= 7) {
-					letterCount++
-					inputText = append(inputText, int(key))
-				}
-				key = rl.GetKeyPressed()
-			}
-			if rl.IsKeyPressed(rl.KeyBackspace) {
-				if letterCount <= 9 && letterCount >= 0 && len(inputText) != 0 {
-					letterCount--
-					inputText = inputText[:len(inputText)-1]
-				}
-			}
-
-		} else {
-			rl.SetMouseCursor(0)
-		}
-		if onInputBox {
-			framesCounter++
-		} else {
-			framesCounter = 0
-		}
-
-		rl.DrawRectangleRec(textBox, rl.LightGray)
-		rl.DrawText(unixSliceToStr(inputText), textBox.ToInt32().X, textBox.ToInt32().Y, 50, rl.White)
-
-		if onInputBox {
-			rl.DrawRectangleLines(int32(textBox.X), int32(textBox.Y), int32(textBox.Width), int32(textBox.Height), rl.Red)
-			if letterCount <= 7 {
-				if framesCounter/20%2 == 0 {
-					rl.DrawText("_", int32(textBox.X) + 8 + rl.MeasureText(unixSliceToStr(inputText), 40), int32(textBox.Y) + 12, 40, rl.Maroon)
-				}
-			}
-		}
-
+		inputBox(searchMenu, 520, 400, 300, 50, 40, 7, false, true)
 	}
 
 	// * Add
@@ -201,4 +155,66 @@ func otherRows() {
 		studentCitizenSlice = drawColl(studentCitizenSlice, collsX[5])
 	}
 
+}
+
+func inputBox(menu bool, x, y, w, h float32, font, maxChar int, letters, numbers bool) {
+	textBox := rl.Rectangle{x, y, w, h}
+	onInputBox := false
+	maxLettUnix, minLettUnix, maxNumbUnix, minNumbUnix := 0, 0, 0, 0
+	letterCount    := 0
+	framesCounter  := 0
+
+
+	if rl.CheckCollisionPointRec(rl.GetMousePosition(), textBox) {
+		onInputBox = true
+	} else if !rl.CheckCollisionPointRec(rl.GetMousePosition(), textBox) {
+		onInputBox = false
+	}
+
+	if letters {
+		maxLettUnix = 90
+		minLettUnix = 65
+	}
+	if numbers {
+		maxNumbUnix = 58
+		minNumbUnix = 48
+	}
+
+	if menu {
+		rl.DrawRectangleRec(textBox, rl.LightGray)
+		rl.DrawText(unixSliceToStr(inputText), textBox.ToInt32().X, textBox.ToInt32().Y, int32(font), rl.Maroon)
+
+		if onInputBox {
+			framesCounter++
+			rl.SetMouseCursor(2)
+			key := rl.GetKeyPressed()
+
+			for key > 0 { // Manages addition of text
+				if (inBetween(int(key), minLettUnix, maxLettUnix) || inBetween(int(key), minNumbUnix, maxNumbUnix)) && (letterCount <= maxChar) {
+					letterCount++
+					inputText = append(inputText, int(key))
+				}
+				key = rl.GetKeyPressed()
+			}
+
+			if rl.IsKeyPressed(rl.KeyBackspace) { 	// Manages deletion of text
+				if letterCount <= 9 && letterCount >= 0 && len(inputText) != 0 {
+					letterCount--
+					inputText = inputText[:len(inputText)-1]
+				}
+			}
+
+			// Manages the Drawing while mouse on the textbos
+			rl.DrawRectangleLines(int32(textBox.X), int32(textBox.Y), int32(textBox.Width), int32(textBox.Height), rl.Red)
+			if letterCount <= maxChar {
+				if framesCounter/20%2 == 0 {
+					rl.DrawText("_", textBox.ToInt32().X + 8 + rl.MeasureText(unixSliceToStr(inputText), int32(font)), textBox.ToInt32().Y + 12, 40, rl.Maroon)
+				}
+			}
+
+		} else {
+			rl.SetMouseCursor(0)
+			framesCounter = 0
+		}
+	}
 }

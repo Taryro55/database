@@ -54,9 +54,6 @@ var (
 	delCooldown      Cooldown
 	modCooldown      Cooldown
 
-	onInputBox     = false
-	textBox        = rl.Rectangle{520, 400, 300, 50}
-	letterCount    = 0
 	framesCounter  int
 	searchMenu     bool
 	inputText      []int
