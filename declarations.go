@@ -37,13 +37,23 @@ var (
 	width         = (height / 9) * 16
 	offsetX       = width * 2 / 100
 	offsetY       = height * 3 / 100
-	recBackground rl.Rectangle
-	recForegound  rl.Rectangle
 	recStudent    rl.Rectangle
+	recBackground = rl.Rectangle{
+		X:      float32(offsetX),
+		Y:      float32(offsetY),
+		Width:  float32(width - (2 * offsetX)),
+		Height: float32(height - (2 * offsetY)),
+	}
+	recForegound = rl.Rectangle{
+		X:      float32(55),
+		Y:      float32(90),
+		Width:  float32(width),
+		Height: float32(height),
+	}
 
 	cBackground, _ = ParseHexColor("#121212")
 	cBoxed, _      = ParseHexColor("#2c2c2c")
-	cPrimary, _    = ParseHexColor("#BB86FC")
+	cPrimary, _    = ParseHexColor("#D03D56")
 
 	o string
 	y int32
@@ -54,8 +64,8 @@ var (
 	delCooldown      Cooldown
 	modCooldown      Cooldown
 
+	letterCount    = 0
 	framesCounter  int
-	searchMenu     bool
 	inputText      []int
 	alphabeth      = []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 	alphabethSlice = []string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
@@ -75,6 +85,6 @@ type Student struct {
 
 type Cooldown struct {
 	Pressed          bool
-	SecSinceCooldown int
 	Loops            int
+	OnMenu			 bool
 }
