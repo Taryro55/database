@@ -13,24 +13,11 @@ func update() {
 	secsSinceStart = int(math.Round(float64(loops / 60)))
 
 	defaultMenu()
-	if mainMenuCooldown.Pressed && mainMenuCooldown.Loops+7 == loops {
-		mainMenuCooldown.Pressed = false
-
-		// searchCooldown.OnMenu, addCooldown.OnMenu, delCooldown.OnMenu, modCooldown.OnMenu = false, false, false, false
-		resetInputBox()
-	}
-	if searchCooldown.Pressed && searchCooldown.Loops+7 == loops {
-		searchCooldown.Pressed = false
-	}
-	if addCooldown.Pressed && addCooldown.Loops+7 == loops {
-		addCooldown.Pressed = false
-	}
-	if delCooldown.Pressed && delCooldown.Loops+7 == loops {
-		delCooldown.Pressed = false
-	}
-	if modCooldown.Pressed && modCooldown.Loops+7 == loops {
-		modCooldown.Pressed = false
-	}
+	mainMenuCooldown.Pressed = offPressed(mainMenuCooldown)
+	searchCooldown.Pressed = offPressed(searchCooldown)
+	addCooldown.Pressed = offPressed(addCooldown)
+	delCooldown.Pressed = offPressed(delCooldown)
+	modCooldown.Pressed = offPressed(modCooldown)
 
 	checkInput(searchCooldown)
 	checkInput(addCooldown)
@@ -231,4 +218,11 @@ func defaultMenu() {
 
 func offMenus() {
 	mainMenuCooldown.OnMenu, searchCooldown.OnMenu, addCooldown.OnMenu, delCooldown.OnMenu, modCooldown.OnMenu = false, false, false, false, false
+}
+
+func offPressed(c Cooldown) bool {
+	if c.Pressed && c.Loops+7 == loops {
+		c.Pressed = false
+	}
+	return c.Pressed
 }
