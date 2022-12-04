@@ -215,22 +215,33 @@ func inBetween(x int, a, b int) bool {
 	}
 }
 
-func isIntSlice(s []int) bool {
-	for _, v := range inputText {
-		if !inBetween(v, 48, 58) {
-			return false
-		}
-	}
-	return true
-}
+// func isIntSlice(s []int) bool {
+// 	for _, v := range inputText {
+// 		if !inBetween(v, 48, 58) {
+// 			return false
+// 		}
+// 	}
+// 	return true
+// }
 
-func search(searchFor int) {
+func search(searchFor int) int {
 	searchInSorted := bubbleSort(strToIntSlice(studentIdSlice))
 	studentIdSlice = intToStrSlice(searchInSorted)
 	index := binarySearch(searchFor, searchInSorted)
+	return index
+}
+
+func moveSliceToTop(index int) {
 	indexVal := studentIdSlice[index]
 	if studentIdSlice[0] != indexVal {
 		studentIdSlice[index] = studentIdSlice[0]
 		studentIdSlice[0] = indexVal
 	}
+}
+
+func sliceStrDelete(index int, slice []string) []string {
+	copy(slice[index:], slice[index+1:])
+	slice[len(slice)-1] = ""
+	slice = slice[:len(slice)-1]
+	return slice
 }

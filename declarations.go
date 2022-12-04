@@ -66,9 +66,23 @@ var (
 
 	letterCount    = 0
 	framesCounter  int
-	inputText      []int
 	alphabeth      = []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 	alphabethSlice = []string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
+
+	inputText    []int
+	idAddText    []int
+	nameAddText  []int
+	lnameAddText []int
+	ageAddText      []int
+	gradeAddText    []int
+	citizenAddText  []int
+
+	idAdd      string
+	nameAdd    string
+	lnameAdd   string
+	ageAdd     string
+	gradeAdd   string
+	citizenAdd string
 )
 
 type MapMod struct {
@@ -84,7 +98,7 @@ type Student struct {
 }
 
 type Cooldown struct {
-	Pressed          bool
-	Loops            int
-	OnMenu			 bool
+	Pressed bool
+	Loops   int
+	OnMenu  bool
 }

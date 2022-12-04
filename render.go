@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math"
 	"strconv"
 
@@ -19,10 +20,12 @@ func update() {
 	delCooldown.Pressed = offPressed(delCooldown)
 	modCooldown.Pressed = offPressed(modCooldown)
 
-	checkInput(searchCooldown)
-	checkInput(addCooldown)
-	checkInput(delCooldown)
-	checkInput(modCooldown)
+	searchCooldown = searchInput(searchCooldown)
+	// checkInput(addCooldown)
+	delCooldown = delInput(delCooldown)
+	// checkInput(modCooldown)
+
+	fmt.Println(studentIdSlice, len(studentIdSlice))
 }
 
 func render() {
@@ -50,7 +53,6 @@ func firstRow() {
 			offMenus()
 			resetInputBox()
 			mainMenuCooldown = Cooldown{true, loops, true}
-			// searchCooldown.OnMenu = false
 		}
 	}
 
@@ -63,11 +65,10 @@ func firstRow() {
 			offMenus()
 			resetInputBox()
 			searchCooldown = Cooldown{true, loops, true}
-			// mainMenuCooldown.OnMenu = false
 		}
 	}
 	if searchCooldown.OnMenu {
-		inputBox(520, 400, 300, 50, 50, 7, false, true)
+		inputBox(520, 400, 300, 50, 40, 7, false, true, "Enter ID")
 	}
 
 	// * Add
@@ -82,8 +83,14 @@ func firstRow() {
 		}
 	}
 	if addCooldown.OnMenu {
-		inputBox(520, 400, 300, 50, 50, 7, true, true)
+		idAdd = inputBox(320, 300, 300, 50, 40, 7, false, true, "Id") // Id
+		nameAdd = inputBox(320, 400, 300, 50, 40, 7, true, false, "Name") // Name
+		lnameAdd = inputBox(320, 500, 300, 50, 40, 7, true, false, "Surname") // Last Name
+		ageAdd = inputBox(720, 300, 300, 50, 40, 7, false, true, "Age") // Age
+		gradeAdd = inputBox(720, 400, 300, 50, 40, 7, false, true, "Grade") // Grade
+		citizenAdd = inputBox(720, 500, 300, 50, 40, 7, true, false, "Citizenship") // Citizenship
 	}
+
 	// * Del
 	if !button(990, 98, 1080, 130) && !delCooldown.Pressed {
 		rl.DrawText("- Del", 1000, 104, 32, rl.White)
@@ -96,7 +103,7 @@ func firstRow() {
 		}
 	}
 	if delCooldown.OnMenu {
-		inputBox(520, 400, 300, 50, 50, 7, false, true)
+		inputBox(520, 400, 300, 50, 40, 7, false, true, "Enter ID")
 	}
 
 	// * Mod
@@ -111,7 +118,7 @@ func firstRow() {
 		}
 	}
 	if modCooldown.OnMenu {
-		inputBox(520, 400, 300, 50, 50, 7, true, true)
+		// inputBox(520, 400, 300, 50, 50, 7, true, true, inputBox())
 	}
 }
 
@@ -137,7 +144,8 @@ func otherRows() {
 
 }
 
-func inputBox(x, y, w, h float32, font, maxChar int, letters, numbers bool) {
+// add a parameter to specify where to store the value. The Menus that only use one input box can store it on the general, the others can have their own dedicated variables to store declarated on the declarations.go
+func inputBox(x, y, w, h float32, font, maxChar int, letters, numbers bool, text string) string {
 	textBox := rl.Rectangle{x, y, w, h}
 	onInputBox := false
 	maxLettUnix, minLettUnix, maxNumbUnix, minNumbUnix := 0, 0, 0, 0
@@ -159,6 +167,8 @@ func inputBox(x, y, w, h float32, font, maxChar int, letters, numbers bool) {
 
 	rl.DrawRectangleRec(textBox, rl.LightGray)
 	rl.DrawText(unixSliceToStr(inputText), textBox.ToInt32().X, textBox.ToInt32().Y, int32(font), cPrimary)
+
+	
 
 	if onInputBox {
 		framesCounter++
@@ -184,29 +194,60 @@ func inputBox(x, y, w, h float32, font, maxChar int, letters, numbers bool) {
 		rl.DrawRectangleLines(int32(textBox.X), int32(textBox.Y), int32(textBox.Width), int32(textBox.Height), rl.Red)
 		if letterCount <= maxChar {
 			if framesCounter/20%2 == 0 {
-				rl.DrawText("_", textBox.ToInt32().X+8+rl.MeasureText(unixSliceToStr(inputText), int32(font)), textBox.ToInt32().Y+12, 40, rl.Maroon)
+				rl.DrawText("_", textBox.ToInt32().X+8+rl.MeasureText(unixSliceToStr(inputText), int32(font)), textBox.ToInt32().Y+12, int32(font), rl.Maroon)
 			}
 		}
+		
 
 	} else {
+		if letterCount == 0 {
+			rl.DrawText(text, textBox.ToInt32().X+8+rl.MeasureText(unixSliceToStr(inputText), int32(font)), textBox.ToInt32().Y+12, int32(font)-5, rl.White)
+		}
+
 		rl.SetMouseCursor(0)
 		framesCounter = 0
 	}
+	return unixSliceToStr(inputText)
 }
 
-func checkInput(c Cooldown) {
+func searchInput(c Cooldown) Cooldown {
 	if c.OnMenu && rl.IsKeyPressed(rl.KeyEnter) {
 		c.OnMenu = false
 		searchFor, _ := strconv.Atoi(unixSliceToStr(inputText))
-		search(searchFor)
+		moveSliceToTop(search(searchFor))
 		resetInputBox()
-		offMenus()
 	}
+	return c
 }
+
+func addInput(c Cooldown) Cooldown {
+	if c.OnMenu && rl.IsKeyPressed(rl.KeyEnter) {
+		c.OnMenu = false
+	}
+	return c
+}
+
+func delInput(c Cooldown) Cooldown {
+	if c.OnMenu && rl.IsKeyPressed(rl.KeyEnter) {
+		c.OnMenu = false
+		searchFor, _ := strconv.Atoi(unixSliceToStr(inputText))
+		index := search(searchFor)
+		studentIdSlice = sliceStrDelete(index, studentIdSlice)
+		studentAgeSlice = sliceStrDelete(index, studentAgeSlice)
+		studentCitizenSlice = sliceStrDelete(index, studentCitizenSlice)
+		studentGradeSlice = sliceStrDelete(index, studentGradeSlice)
+		studentNameSlice = sliceStrDelete(index, studentNameSlice)
+		studentLastNameSlice = sliceStrDelete(index, studentLastNameSlice)
+		resetInputBox()
+	}
+	return c
+}
+
 func resetInputBox() {
 	// framesCounter = 0
 	letterCount = 0
 	inputText = []int{}
+	idAddText = []int{}
 	rl.SetMouseCursor(0)
 }
 
