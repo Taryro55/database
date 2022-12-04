@@ -64,25 +64,18 @@ var (
 	delCooldown      Cooldown
 	modCooldown      Cooldown
 
-	letterCount    = 0
-	framesCounter  int
 	alphabeth      = []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 	alphabethSlice = []string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
 
-	inputText    []int
-	idAddText    []int
-	nameAddText  []int
-	lnameAddText []int
-	ageAddText      []int
-	gradeAddText    []int
-	citizenAddText  []int
+	searchInput     Input
+	delInput      	Input
 
-	idAdd      string
-	nameAdd    string
-	lnameAdd   string
-	ageAdd     string
-	gradeAdd   string
-	citizenAdd string
+	idAddInput      Input
+	nameAddInput    Input
+	lnameAddInput   Input
+	ageAddInput     Input
+	gradeAddInput   Input
+	citizenAddInput Input
 )
 
 type MapMod struct {
@@ -101,4 +94,11 @@ type Cooldown struct {
 	Pressed bool
 	Loops   int
 	OnMenu  bool
+}
+
+type Input struct {
+	InputText []int
+	OnInputBox bool
+	FramesCounter int
+	LetterCount int
 }

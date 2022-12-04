@@ -3,12 +3,16 @@ package main
 import (
 	"fmt"
 	"math"
+	"reflect"
 	"strconv"
+	"strings"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
 func update() {
+	updateMaps()
+
 	exec = !rl.WindowShouldClose()
 	y = 200
 	secsSinceStart = int(math.Round(float64(loops / 60)))
@@ -20,12 +24,12 @@ func update() {
 	delCooldown.Pressed = offPressed(delCooldown)
 	modCooldown.Pressed = offPressed(modCooldown)
 
-	searchCooldown = searchInput(searchCooldown)
-	// checkInput(addCooldown)
-	delCooldown = delInput(delCooldown)
+	searchCooldown = searchInputManager(searchCooldown)
+	addCooldown = addInputManager(addCooldown)
+	delCooldown = delInputManager(delCooldown)
 	// checkInput(modCooldown)
 
-	fmt.Println(studentIdSlice, len(studentIdSlice))
+	// fmt.Println(studentIdSlice)
 }
 
 func render() {
@@ -68,7 +72,7 @@ func firstRow() {
 		}
 	}
 	if searchCooldown.OnMenu {
-		inputBox(520, 400, 300, 50, 40, 7, false, true, "Enter ID")
+		searchInput = inputBox(520, 400, 300, 50, 40, 7, false, true, "Enter ID", searchInput)
 	}
 
 	// * Add
@@ -83,12 +87,12 @@ func firstRow() {
 		}
 	}
 	if addCooldown.OnMenu {
-		idAdd = inputBox(320, 300, 300, 50, 40, 7, false, true, "Id") // Id
-		nameAdd = inputBox(320, 400, 300, 50, 40, 7, true, false, "Name") // Name
-		lnameAdd = inputBox(320, 500, 300, 50, 40, 7, true, false, "Surname") // Last Name
-		ageAdd = inputBox(720, 300, 300, 50, 40, 7, false, true, "Age") // Age
-		gradeAdd = inputBox(720, 400, 300, 50, 40, 7, false, true, "Grade") // Grade
-		citizenAdd = inputBox(720, 500, 300, 50, 40, 7, true, false, "Citizenship") // Citizenship
+		idAddInput = inputBox(320, 300, 300, 50, 40, 7, false, true, "Id", idAddInput)                    // Id
+		nameAddInput = inputBox(320, 400, 300, 50, 40, 7, true, false, "Name", nameAddInput)              // Name
+		lnameAddInput = inputBox(320, 500, 300, 50, 40, 7, true, false, "Surname", lnameAddInput)         // Last Name
+		ageAddInput = inputBox(720, 300, 300, 50, 40, 2, false, true, "Age", ageAddInput)                 // Age
+		gradeAddInput = inputBox(720, 400, 300, 50, 40, 2, false, true, "Grade", gradeAddInput)           // Grade
+		citizenAddInput = inputBox(720, 500, 300, 50, 40, 5, true, false, "Citizenship", citizenAddInput) // Citizenship
 	}
 
 	// * Del
@@ -103,7 +107,7 @@ func firstRow() {
 		}
 	}
 	if delCooldown.OnMenu {
-		inputBox(520, 400, 300, 50, 40, 7, false, true, "Enter ID")
+		delInput = inputBox(520, 400, 300, 50, 40, 7, false, true, "Enter ID", delInput)
 	}
 
 	// * Mod
@@ -145,15 +149,18 @@ func otherRows() {
 }
 
 // add a parameter to specify where to store the value. The Menus that only use one input box can store it on the general, the others can have their own dedicated variables to store declarated on the declarations.go
-func inputBox(x, y, w, h float32, font, maxChar int, letters, numbers bool, text string) string {
+func inputBox(x, y, w, h float32, font, maxChar int, letters, numbers bool, text string, input Input) Input {
+	maxChar--
+	if input.InputText == nil {
+		input.InputText = make([]int, 0)
+	}
 	textBox := rl.Rectangle{x, y, w, h}
-	onInputBox := false
 	maxLettUnix, minLettUnix, maxNumbUnix, minNumbUnix := 0, 0, 0, 0
 
 	if rl.CheckCollisionPointRec(rl.GetMousePosition(), textBox) {
-		onInputBox = true
+		input.OnInputBox = true
 	} else if !rl.CheckCollisionPointRec(rl.GetMousePosition(), textBox) {
-		onInputBox = false
+		input.OnInputBox = false
 	}
 
 	if letters {
@@ -166,71 +173,106 @@ func inputBox(x, y, w, h float32, font, maxChar int, letters, numbers bool, text
 	}
 
 	rl.DrawRectangleRec(textBox, rl.LightGray)
-	rl.DrawText(unixSliceToStr(inputText), textBox.ToInt32().X, textBox.ToInt32().Y, int32(font), cPrimary)
+	rl.DrawText(unixSliceToStr(input.InputText), textBox.ToInt32().X, textBox.ToInt32().Y, int32(font), cPrimary)
 
-	
-
-	if onInputBox {
-		framesCounter++
+	if input.OnInputBox {
+		input.FramesCounter++
 		rl.SetMouseCursor(2)
 		key := rl.GetKeyPressed()
 
 		for key > 0 { // Manages addition of text
-			if (inBetween(int(key), minLettUnix, maxLettUnix) || inBetween(int(key), minNumbUnix, maxNumbUnix)) && (letterCount <= maxChar) {
-				letterCount++
-				inputText = append(inputText, int(key))
+			if (inBetween(int(key), minLettUnix, maxLettUnix) || inBetween(int(key), minNumbUnix, maxNumbUnix)) && (input.LetterCount <= maxChar) {
+				input.LetterCount++
+				input.InputText = append(input.InputText, int(key))
 			}
 			key = rl.GetKeyPressed()
 		}
 
 		if rl.IsKeyPressed(rl.KeyBackspace) { // Manages deletion of text
-			if letterCount <= 9 && letterCount >= 0 && len(inputText) != 0 {
-				letterCount--
-				inputText = inputText[:len(inputText)-1]
+			if input.LetterCount <= 9 && input.LetterCount >= 0 && len(input.InputText) != 0 {
+				input.LetterCount--
+				input.InputText = input.InputText[:len(input.InputText)-1]
 			}
 		}
 
 		// Manages the Drawing while mouse on the textbos
 		rl.DrawRectangleLines(int32(textBox.X), int32(textBox.Y), int32(textBox.Width), int32(textBox.Height), rl.Red)
-		if letterCount <= maxChar {
-			if framesCounter/20%2 == 0 {
-				rl.DrawText("_", textBox.ToInt32().X+8+rl.MeasureText(unixSliceToStr(inputText), int32(font)), textBox.ToInt32().Y+12, int32(font), rl.Maroon)
+		if input.LetterCount <= maxChar {
+			if input.FramesCounter/20%2 == 0 {
+				rl.DrawText("_", textBox.ToInt32().X+8+rl.MeasureText(unixSliceToStr(input.InputText), int32(font)), textBox.ToInt32().Y+12, int32(font), rl.Maroon)
 			}
 		}
-		
 
 	} else {
-		if letterCount == 0 {
-			rl.DrawText(text, textBox.ToInt32().X+8+rl.MeasureText(unixSliceToStr(inputText), int32(font)), textBox.ToInt32().Y+12, int32(font)-5, rl.White)
+		if input.LetterCount == 0 {
+			rl.DrawText(text, textBox.ToInt32().X+8+rl.MeasureText(unixSliceToStr(input.InputText), int32(font)), textBox.ToInt32().Y+12, int32(font)-5, rl.White)
 		}
 
 		rl.SetMouseCursor(0)
-		framesCounter = 0
+		input.FramesCounter = 0
 	}
-	return unixSliceToStr(inputText)
+	return input
 }
 
-func searchInput(c Cooldown) Cooldown {
+func searchInputManager(c Cooldown) Cooldown {
 	if c.OnMenu && rl.IsKeyPressed(rl.KeyEnter) {
 		c.OnMenu = false
-		searchFor, _ := strconv.Atoi(unixSliceToStr(inputText))
+		searchFor, _ := strconv.Atoi(unixSliceToStr(searchInput.InputText))
 		moveSliceToTop(search(searchFor))
 		resetInputBox()
 	}
 	return c
 }
 
-func addInput(c Cooldown) Cooldown {
+func addInputManager(c Cooldown) Cooldown {
 	if c.OnMenu && rl.IsKeyPressed(rl.KeyEnter) {
 		c.OnMenu = false
+
+		// Checks if the input values are whats expected.
+		validId := false
+		validAge := false
+		validGrade := false
+		validCitizen := false
+
+		id, _ := strconv.Atoi(unixSliceToStr(idAddInput.InputText))
+		age, _ := strconv.Atoi(unixSliceToStr(ageAddInput.InputText))
+		citizen := strings.ToLower(unixSliceToStr(citizenAddInput.InputText))
+		grade, _ := strconv.Atoi(unixSliceToStr(gradeAddInput.InputText))
+
+		if fmt.Sprint(reflect.TypeOf(id/1_000_000)) == "int" && !sliceContains(unixSliceToStr(idAddInput.InputText), studentIdSlice) {
+			validId = true
+		}
+
+		if inBetween(age, 0, 99) {
+			validAge = true
+		}
+		if inBetween(grade, 0, 12) {
+			validGrade = true
+		}
+		if citizen == "true" || citizen == "false" {
+			validCitizen = true
+		}
+
+		if validId && validAge && validGrade && validCitizen {
+			studentIdSlice = append(studentIdSlice, unixSliceToStr(idAddInput.InputText))
+			studentNameSlice = append(studentNameSlice, unixSliceToStr(nameAddInput.InputText))
+			studentLastNameSlice = append(studentLastNameSlice, unixSliceToStr(lnameAddInput.InputText))
+			studentAgeSlice = append(studentAgeSlice, unixSliceToStr(ageAddInput.InputText))
+			studentGradeSlice = append(studentGradeSlice, unixSliceToStr(gradeAddInput.InputText))
+			studentCitizenSlice = append(studentCitizenSlice, strings.ToLower(unixSliceToStr(citizenAddInput.InputText)))
+		} else {
+			// TODO print warning that data type was incorrect
+		}
+
+		resetInputBox()
 	}
 	return c
 }
 
-func delInput(c Cooldown) Cooldown {
+func delInputManager(c Cooldown) Cooldown {
 	if c.OnMenu && rl.IsKeyPressed(rl.KeyEnter) {
 		c.OnMenu = false
-		searchFor, _ := strconv.Atoi(unixSliceToStr(inputText))
+		searchFor, _ := strconv.Atoi(unixSliceToStr(delInput.InputText))
 		index := search(searchFor)
 		studentIdSlice = sliceStrDelete(index, studentIdSlice)
 		studentAgeSlice = sliceStrDelete(index, studentAgeSlice)
@@ -244,10 +286,17 @@ func delInput(c Cooldown) Cooldown {
 }
 
 func resetInputBox() {
-	// framesCounter = 0
-	letterCount = 0
-	inputText = []int{}
-	idAddText = []int{}
+
+	searchInput = resetInput(searchInput)
+	delInput = resetInput(delInput)
+
+	ageAddInput = resetInput(ageAddInput)
+	citizenAddInput = resetInput(citizenAddInput)
+	gradeAddInput = resetInput(gradeAddInput)
+	idAddInput = resetInput(idAddInput)
+	nameAddInput = resetInput(nameAddInput)
+	lnameAddInput = resetInput(lnameAddInput)
+
 	rl.SetMouseCursor(0)
 }
 

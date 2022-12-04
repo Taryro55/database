@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"log"
-	"math/rand"
 	"os"
 	"path"
 	"strconv"
@@ -31,11 +30,8 @@ func init() {
 }
 
 func quit() {
-	// open()
-	// if err := file.Close(); err != nil {
-	// 	// failed to close the file
-	// 	log.Fatal(err)
-	// }
+	write(studentMap)
+	rl.CloseWindow()
 }
 
 /*
@@ -43,16 +39,16 @@ Creates maps for all info. Key = id && Value = info
 Recives a slice of Student
 ! It also recives a temp rand.Rand to generate ids. Create a better sys
 */
-func createMaps(s []Student, r *rand.Rand) {
+func createMaps(s []Student, ids []int) {
 	studentMap, studentNameMap, studentLastNameMap, studentAgeMap, studentCitizenMap, studentGradeMap = make(map[string]Student), make(map[int]string), make(map[int]string), make(map[int]int), make(map[int]bool), make(map[int]int)
 	for x, y := range s {
-		id := r.Intn(9_999_999-1_000_000) + 1_000_000 // Only 8 digit ids
-		studentMap[strconv.FormatInt(int64(id), 10)] = y
-		studentNameMap[id] = s[x].FName
-		studentLastNameMap[id] = s[x].LName
-		studentAgeMap[id] = s[x].Age
-		studentGradeMap[id] = s[x].Grade
-		studentCitizenMap[id] = s[x].Citizen
+		// id := r.Intn(9_999_999-1_000_000) + 1_000_000 // Only 8 digit ids
+		studentMap[strconv.FormatInt(int64(ids[x]), 10)] = y
+		studentNameMap[ids[x]] = s[x].FName
+		studentLastNameMap[ids[x]] = s[x].LName
+		studentAgeMap[ids[x]] = s[x].Age
+		studentGradeMap[ids[x]] = s[x].Grade
+		studentCitizenMap[ids[x]] = s[x].Citizen
 	}
 }
 func createSlices() {
@@ -70,48 +66,28 @@ func createSlices() {
 	}
 }
 
-/*
-Recives value to search for and a sorted array of ints to search in.
-Returns the index value of the desired value.
-*/
-func binarySearch(v int, s []int) int {
-
-	indMin, indMax := 0, len(s)-1
-
-	for indMin < indMax {
-		indMid := int(indMin + (indMax-indMin)/2)
-
-		if !(s[indMid] >= v) {
-			indMin = indMid + 1
-		} else {
-			indMax = indMid
-		}
-
-	}
-	// fmt.Println(v, s[indMin], s)
-
-	if v == s[indMin] {
-		return indMin
-	} else {
-		return -1
-	}
-
-}
-
 func main() {
-	readedMap = read()
-	tempRngStudents()
-	createSlices()
-	// write(studentMap)
 	fmt.Println("\033[H\033[2J")
-	// f := []int{3274709,4469402,5906400,7196425,7900458}
+
+	studs, ids := []Student{}, []int{}
+	readedMap = read()
+	for k, v := range readedMap {
+		id, _ := strconv.Atoi(k)
+		studs = append(studs, v)
+		ids = append(ids, id)
+	}
+
+	createMaps(studs, ids)
+	createSlices()
 
 	for exec {
 		// fmt.Println(rl.GetMouseX(), rl.GetMouseY())
-		// fmt.Println(binarySearch(4469402, f))
 
+		// fmt.Println(studentAgeMap, studentLastNameMap, studentNameMap, studentGradeMap, studentCitizenMap)
 		update()
 		render()
 		loops++
 	}
+	updateMainMap()
+	quit()
 }

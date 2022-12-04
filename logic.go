@@ -9,6 +9,41 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
+
+
+
+
+
+
+// START OF SORTING
+/*
+Recives value to search for and a sorted array of ints to search in.
+Returns the index value of the desired value.
+*/
+func binarySearch(v int, s []int) int {
+
+	indMin, indMax := 0, len(s)-1
+
+	for indMin < indMax {
+		indMid := int(indMin + (indMax-indMin)/2)
+
+		if !(s[indMid] >= v) {
+			indMin = indMid + 1
+		} else {
+			indMax = indMid
+		}
+
+	}
+	// fmt.Println(v, s[indMin], s)
+
+	if v == s[indMin] {
+		return indMin
+	} else {
+		return -1
+	}
+
+}
+
 func bubbleSort(s []int) []int {
 	for y := 0; y < len(s)-1; y++ {
 		for v := 0; v < len(s)-y-1; v++ {
@@ -75,7 +110,15 @@ func bSortBool(m map[int]bool) MapMod {
 
 	return mm
 }
+// END OF SORTING
 
+
+
+
+
+
+
+// START OF RENDERS
 func ParseHexColor(s string) (c color.RGBA, err error) {
 	c.A = 0xff
 	switch len(s) {
@@ -145,6 +188,51 @@ func button(posx, posy, width, height int32) bool {
 	return false
 }
 
+func search(searchFor int) (int) {
+	searchInSorted := bubbleSort(strToIntSlice(studentIdSlice))
+	studentIdSlice = intToStrSlice(searchInSorted)
+	index := binarySearch(searchFor, searchInSorted)
+	return index
+}
+
+func moveSliceToTop(index int) {
+	indexVal := studentIdSlice[index]
+	if studentIdSlice[0] != indexVal {
+		studentIdSlice[index] = studentIdSlice[0]
+		studentIdSlice[0] = indexVal
+	}
+}
+
+func sliceStrDelete(index int, slice []string) []string {
+	copy(slice[index:], slice[index+1:])
+	slice[len(slice)-1] = ""
+	slice = slice[:len(slice)-1]
+	return slice
+}
+
+func resetInput(i Input) Input {
+	i.LetterCount = 0
+	i.InputText = []int{}
+	return i
+}
+// END OF RENDERS
+
+
+
+
+
+
+
+// START OF SLICE MANIPULATION
+func sliceContains(k string, s []string) bool {
+	for _, v := range s {
+		if k == v {
+			return true
+		}
+	}
+	return false
+}
+
 func strToIntSlice(s []string) []int {
 	r := make([]int, 0)
 	for _, v := range s {
@@ -196,7 +284,6 @@ func unixToInt(s int) int {
 }
 
 func unixToStr(s int) string {
-	
 	for inBetween(s, 65, 90) {
 		for i := range alphabeth {
 			if s-65 == i {
@@ -215,33 +302,74 @@ func inBetween(x int, a, b int) bool {
 	}
 }
 
-// func isIntSlice(s []int) bool {
-// 	for _, v := range inputText {
-// 		if !inBetween(v, 48, 58) {
-// 			return false
-// 		}
-// 	}
-// 	return true
-// }
+func isIntSlice(s []int) bool {
+	for _, v := range s {
+		if !inBetween(v, 48, 58) {
+			return false
+		}
+	}
+	return true
+}
+// END OF SLICE MANIPULATION
 
-func search(searchFor int) int {
-	searchInSorted := bubbleSort(strToIntSlice(studentIdSlice))
-	studentIdSlice = intToStrSlice(searchInSorted)
-	index := binarySearch(searchFor, searchInSorted)
-	return index
+func mapContains[V int | string | bool] (a string, s map[int]V) bool {
+	i, _ := strconv.Atoi(a)
+	for k, _ := range s {
+		if i == k {
+			return true
+		}
+	}
+	return false
 }
 
-func moveSliceToTop(index int) {
-	indexVal := studentIdSlice[index]
-	if studentIdSlice[0] != indexVal {
-		studentIdSlice[index] = studentIdSlice[0]
-		studentIdSlice[0] = indexVal
+func updateMaps() {
+	for _, v := range studentIdSlice {
+		if !mapContains(v, studentNameMap) {
+			s, _ := strconv.Atoi(v)
+			studentNameMap[s] = studentNameSlice[len(studentIdSlice)-1]
+		}
+		if !mapContains(v, studentLastNameMap) {
+			s, _ := strconv.Atoi(v)
+			studentLastNameMap[s] = studentLastNameSlice[len(studentIdSlice)-1]
+		}
+		if !mapContains(v, studentAgeMap) {
+			s, _ := strconv.Atoi(v)
+			g, _ := strconv.Atoi(studentAgeSlice[len(studentIdSlice)-1])
+			studentAgeMap[s] = g
+		}
+		if !mapContains(v, studentGradeMap) {
+			s, _ := strconv.Atoi(v)
+			g, _ := strconv.Atoi(studentGradeSlice[len(studentIdSlice)-1])
+			studentGradeMap[s] = g
+		}
+		if !mapContains(v, studentCitizenMap) {
+			s, _ := strconv.Atoi(v)
+			g, _ := strconv.ParseBool(studentCitizenSlice[len(studentIdSlice)-1])
+			studentCitizenMap[s] = g
+		}
 	}
 }
 
-func sliceStrDelete(index int, slice []string) []string {
-	copy(slice[index:], slice[index+1:])
-	slice[len(slice)-1] = ""
-	slice = slice[:len(slice)-1]
-	return slice
+func updateMainMap() {
+	ss := make(map[int]Student, 0)
+	for _, v := range studentIdSlice {
+		id, _ := strconv.Atoi(v)
+		y := Student{
+			studentNameMap[id],
+			studentLastNameMap[id],
+			studentAgeMap[id],
+			studentGradeMap[id],
+			studentCitizenMap[id],
+		}
+		ss[id] = y
+	}
+
+	for k := range studentMap {
+		delete(studentMap, k)
+	}
+
+	for k, v := range ss {
+		s := strconv.FormatInt(int64(k), 10)
+		studentMap[s] = v
+	}
 }
