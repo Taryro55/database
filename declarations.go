@@ -54,6 +54,7 @@ var (
 	cBackground, _ = ParseHexColor("#121212")
 	cBoxed, _      = ParseHexColor("#2c2c2c")
 	cPrimary, _    = ParseHexColor("#D03D56")
+	cError, _      = ParseHexColor("#CF6679")
 
 	o string
 	y int32
@@ -67,15 +68,27 @@ var (
 	alphabeth      = []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
 	alphabethSlice = []string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
 
-	searchInput     Input
-	delInput      	Input
-
+	searchInput Input
+	delInput    Input
+	
 	idAddInput      Input
 	nameAddInput    Input
 	lnameAddInput   Input
 	ageAddInput     Input
 	gradeAddInput   Input
 	citizenAddInput Input
+
+	oldIdModInput	Input
+	idModInput      Input
+	nameModInput    Input
+	lnameModInput   Input
+	ageModInput     Input
+	gradeModInput   Input
+	citizenModInput Input
+
+	errorSlice		[]string
+	errorLooped 	bool
+	errorText		string
 )
 
 type MapMod struct {
@@ -97,8 +110,9 @@ type Cooldown struct {
 }
 
 type Input struct {
-	InputText []int
-	OnInputBox bool
+	InputText     []int
+	OnInputBox    bool
 	FramesCounter int
-	LetterCount int
+	LetterCount   int
+	Valid         bool
 }

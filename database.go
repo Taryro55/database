@@ -37,12 +37,10 @@ func quit() {
 /*
 Creates maps for all info. Key = id && Value = info
 Recives a slice of Student
-! It also recives a temp rand.Rand to generate ids. Create a better sys
 */
 func createMaps(s []Student, ids []int) {
 	studentMap, studentNameMap, studentLastNameMap, studentAgeMap, studentCitizenMap, studentGradeMap = make(map[string]Student), make(map[int]string), make(map[int]string), make(map[int]int), make(map[int]bool), make(map[int]int)
 	for x, y := range s {
-		// id := r.Intn(9_999_999-1_000_000) + 1_000_000 // Only 8 digit ids
 		studentMap[strconv.FormatInt(int64(ids[x]), 10)] = y
 		studentNameMap[ids[x]] = s[x].FName
 		studentLastNameMap[ids[x]] = s[x].LName
@@ -56,7 +54,6 @@ func createSlices() {
 		if len(studentIdSlice) == len(readedMap) {
 			break
 		}
-		fmt.Println(k)
 		studentIdSlice = append(studentIdSlice, k)
 		studentNameSlice = append(studentNameSlice, v.FName)
 		studentLastNameSlice = append(studentLastNameSlice, v.LName)

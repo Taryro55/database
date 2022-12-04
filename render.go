@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 	"math"
-	"reflect"
 	"strconv"
 	"strings"
 
@@ -27,9 +26,19 @@ func update() {
 	searchCooldown = searchInputManager(searchCooldown)
 	addCooldown = addInputManager(addCooldown)
 	delCooldown = delInputManager(delCooldown)
-	// checkInput(modCooldown)
+	modCooldown = modInputManager(modCooldown)
 
-	// fmt.Println(studentIdSlice)
+	// errorSlice = append(errorSlice, "TEST", "TEST2")
+	if errorSlice != nil {
+		if !errorLooped {
+			for _, v := range errorSlice {
+				errorText = errorText + "\n" + v
+			}
+			errorLooped = true
+		}
+		rl.DrawText(errorText, 750, -20, 25, cError)
+
+	}
 }
 
 func render() {
@@ -41,7 +50,6 @@ func render() {
 	rl.DrawRectangleRounded(recForegound, 0.025, 0, cBoxed)
 
 	rl.DrawText("Student Database DMCI", 65, 27, 50, rl.White)
-	rl.DrawText("DATE", 1000, 27, 50, rl.White)
 
 	firstRow()
 	otherRows()
@@ -88,8 +96,8 @@ func firstRow() {
 	}
 	if addCooldown.OnMenu {
 		idAddInput = inputBox(320, 300, 300, 50, 40, 7, false, true, "Id", idAddInput)                    // Id
-		nameAddInput = inputBox(320, 400, 300, 50, 40, 7, true, false, "Name", nameAddInput)              // Name
-		lnameAddInput = inputBox(320, 500, 300, 50, 40, 7, true, false, "Surname", lnameAddInput)         // Last Name
+		nameAddInput = inputBox(320, 400, 300, 50, 40, 10, true, false, "Name", nameAddInput)             // Name
+		lnameAddInput = inputBox(320, 500, 300, 50, 40, 10, true, false, "Surname", lnameAddInput)        // Last Name
 		ageAddInput = inputBox(720, 300, 300, 50, 40, 2, false, true, "Age", ageAddInput)                 // Age
 		gradeAddInput = inputBox(720, 400, 300, 50, 40, 2, false, true, "Grade", gradeAddInput)           // Grade
 		citizenAddInput = inputBox(720, 500, 300, 50, 40, 5, true, false, "Citizenship", citizenAddInput) // Citizenship
@@ -122,7 +130,14 @@ func firstRow() {
 		}
 	}
 	if modCooldown.OnMenu {
-		// inputBox(520, 400, 300, 50, 50, 7, true, true, inputBox())
+		oldIdModInput = inputBox(520, 200, 300, 50, 40, 7, false, true, "Id To Mod", oldIdModInput)
+
+		idModInput = inputBox(320, 300, 300, 50, 40, 7, false, true, "Id", idModInput)                    // Id
+		nameModInput = inputBox(320, 400, 300, 50, 40, 10, true, false, "Name", nameModInput)             // Name
+		lnameModInput = inputBox(320, 500, 300, 50, 40, 10, true, false, "Surname", lnameModInput)        // Last Name
+		ageModInput = inputBox(720, 300, 300, 50, 40, 2, false, true, "Age", ageModInput)                 // Age
+		gradeModInput = inputBox(720, 400, 300, 50, 40, 2, false, true, "Grade", gradeModInput)           // Grade
+		citizenModInput = inputBox(720, 500, 300, 50, 40, 5, true, false, "Citizenship", citizenModInput) // Citizenship
 	}
 }
 
@@ -148,7 +163,6 @@ func otherRows() {
 
 }
 
-// add a parameter to specify where to store the value. The Menus that only use one input box can store it on the general, the others can have their own dedicated variables to store declarated on the declarations.go
 func inputBox(x, y, w, h float32, font, maxChar int, letters, numbers bool, text string, input Input) Input {
 	maxChar--
 	if input.InputText == nil {
@@ -189,7 +203,7 @@ func inputBox(x, y, w, h float32, font, maxChar int, letters, numbers bool, text
 		}
 
 		if rl.IsKeyPressed(rl.KeyBackspace) { // Manages deletion of text
-			if input.LetterCount <= 9 && input.LetterCount >= 0 && len(input.InputText) != 0 {
+			if input.LetterCount <= maxChar+1 && input.LetterCount >= 0 && len(input.InputText) != 0 {
 				input.LetterCount--
 				input.InputText = input.InputText[:len(input.InputText)-1]
 			}
@@ -216,9 +230,17 @@ func inputBox(x, y, w, h float32, font, maxChar int, letters, numbers bool, text
 
 func searchInputManager(c Cooldown) Cooldown {
 	if c.OnMenu && rl.IsKeyPressed(rl.KeyEnter) {
+		errorSlice = []string{}
+		errorLooped = false
+		errorText = ""
 		c.OnMenu = false
 		searchFor, _ := strconv.Atoi(unixSliceToStr(searchInput.InputText))
-		moveSliceToTop(search(searchFor))
+		index := search(searchFor)
+		if index != -1 {
+			moveSliceToTop(index)
+		} else {
+			errorSlice = append(errorSlice, "Cannot find that ID!")
+		}
 		resetInputBox()
 	}
 	return c
@@ -226,42 +248,58 @@ func searchInputManager(c Cooldown) Cooldown {
 
 func addInputManager(c Cooldown) Cooldown {
 	if c.OnMenu && rl.IsKeyPressed(rl.KeyEnter) {
+		errorSlice = []string{}
+		errorLooped = false
+		errorText = ""
 		c.OnMenu = false
 
-		// Checks if the input values are whats expected.
-		validId := false
-		validAge := false
-		validGrade := false
-		validCitizen := false
-
-		id, _ := strconv.Atoi(unixSliceToStr(idAddInput.InputText))
+		name := unixSliceToStr(nameAddInput.InputText)
+		lname := unixSliceToStr(lnameAddInput.InputText)
 		age, _ := strconv.Atoi(unixSliceToStr(ageAddInput.InputText))
 		citizen := strings.ToLower(unixSliceToStr(citizenAddInput.InputText))
 		grade, _ := strconv.Atoi(unixSliceToStr(gradeAddInput.InputText))
 
-		if fmt.Sprint(reflect.TypeOf(id/1_000_000)) == "int" && !sliceContains(unixSliceToStr(idAddInput.InputText), studentIdSlice) {
-			validId = true
+		if !sliceContains(unixSliceToStr(idAddInput.InputText), studentIdSlice) {
+			idAddInput.Valid = true
 		}
-
-		if inBetween(age, 0, 99) {
-			validAge = true
+		if lname == "" || name == "" {
+			nameAddInput.Valid = false
+			lnameAddInput.Valid = false
 		}
-		if inBetween(grade, 0, 12) {
-			validGrade = true
+		if inBetween(age, 1, 99) {
+			ageAddInput.Valid = true
+		}
+		if inBetween(grade, 1, 12) {
+			gradeAddInput.Valid = true
 		}
 		if citizen == "true" || citizen == "false" {
-			validCitizen = true
+			citizenAddInput.Valid = true
 		}
 
-		if validId && validAge && validGrade && validCitizen {
+		if idAddInput.Valid && nameAddInput.Valid && lnameAddInput.Valid && ageAddInput.Valid && gradeAddInput.Valid && citizenAddInput.Valid {
 			studentIdSlice = append(studentIdSlice, unixSliceToStr(idAddInput.InputText))
 			studentNameSlice = append(studentNameSlice, unixSliceToStr(nameAddInput.InputText))
 			studentLastNameSlice = append(studentLastNameSlice, unixSliceToStr(lnameAddInput.InputText))
 			studentAgeSlice = append(studentAgeSlice, unixSliceToStr(ageAddInput.InputText))
 			studentGradeSlice = append(studentGradeSlice, unixSliceToStr(gradeAddInput.InputText))
-			studentCitizenSlice = append(studentCitizenSlice, strings.ToLower(unixSliceToStr(citizenAddInput.InputText)))
-		} else {
-			// TODO print warning that data type was incorrect
+			studentCitizenSlice = append(studentCitizenSlice, citizen)
+		}
+
+		if !idAddInput.Valid {
+			errorSlice = append(errorSlice, "Id's cant be repeated.")
+		}
+
+		if !ageAddInput.Valid || !nameAddInput.Valid || !lnameAddInput.Valid {
+			errorSlice = append(errorSlice, "Please fill out every input.")
+		}
+
+		if !gradeAddInput.Valid {
+			errorSlice = append(errorSlice, "Grade must be between 1-12, try again.")
+			// rl.DrawText("Grade must be between 1-12, try again.", 1000, 30, 20, cError)
+		}
+		if !citizenAddInput.Valid {
+			errorSlice = append(errorSlice, "Citizenship can only be true or false.")
+			// fmt.Println("Citizenship can only be true or false")
 		}
 
 		resetInputBox()
@@ -271,15 +309,44 @@ func addInputManager(c Cooldown) Cooldown {
 
 func delInputManager(c Cooldown) Cooldown {
 	if c.OnMenu && rl.IsKeyPressed(rl.KeyEnter) {
+		errorSlice = []string{}
+		errorLooped = false
+		errorText = ""
 		c.OnMenu = false
 		searchFor, _ := strconv.Atoi(unixSliceToStr(delInput.InputText))
 		index := search(searchFor)
+		if index == -1 {
+			errorSlice = append(errorSlice, "Cannot find that ID!")
+			resetInputBox()
+			return c
+		}
 		studentIdSlice = sliceStrDelete(index, studentIdSlice)
 		studentAgeSlice = sliceStrDelete(index, studentAgeSlice)
 		studentCitizenSlice = sliceStrDelete(index, studentCitizenSlice)
 		studentGradeSlice = sliceStrDelete(index, studentGradeSlice)
 		studentNameSlice = sliceStrDelete(index, studentNameSlice)
 		studentLastNameSlice = sliceStrDelete(index, studentLastNameSlice)
+		resetInputBox()
+	}
+	return c
+}
+
+func modInputManager(c Cooldown) Cooldown {
+	if c.OnMenu && rl.IsKeyPressed(rl.KeyEnter) {
+		errorSlice = []string{}
+		errorLooped = false
+		errorText = ""
+		c.OnMenu = false
+		searchFor, _ := strconv.Atoi(unixSliceToStr(oldIdModInput.InputText))
+		index := search(searchFor)
+		fmt.Println(studentIdSlice, len(studentIdSlice))
+		studentIdSlice[index] = unixSliceToStr(idModInput.InputText)
+		fmt.Println(studentIdSlice, len(studentIdSlice))
+		// studentAgeSlice = sliceStrDelete(index, studentAgeSlice)
+		// studentCitizenSlice = sliceStrDelete(index, studentCitizenSlice)
+		// studentGradeSlice = sliceStrDelete(index, studentGradeSlice)
+		// studentNameSlice = sliceStrDelete(index, studentNameSlice)
+		// studentLastNameSlice = sliceStrDelete(index, studentLastNameSlice)
 		resetInputBox()
 	}
 	return c

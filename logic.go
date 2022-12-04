@@ -9,12 +9,6 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
-
-
-
-
-
-
 // START OF SORTING
 /*
 Recives value to search for and a sorted array of ints to search in.
@@ -110,13 +104,8 @@ func bSortBool(m map[int]bool) MapMod {
 
 	return mm
 }
+
 // END OF SORTING
-
-
-
-
-
-
 
 // START OF RENDERS
 func ParseHexColor(s string) (c color.RGBA, err error) {
@@ -179,16 +168,16 @@ func scroll(s []string) []string {
 }
 
 func button(posx, posy, width, height int32) bool {
-	if ((posx < rl.GetMouseX()) &&
+	if (posx < rl.GetMouseX()) &&
 		(rl.GetMouseX() < width) &&
 		(posy < rl.GetMouseY()) &&
-		(rl.GetMouseY() < height)) {
+		(rl.GetMouseY() < height) {
 		return true
 	}
 	return false
 }
 
-func search(searchFor int) (int) {
+func search(searchFor int) int {
 	searchInSorted := bubbleSort(strToIntSlice(studentIdSlice))
 	studentIdSlice = intToStrSlice(searchInSorted)
 	index := binarySearch(searchFor, searchInSorted)
@@ -215,13 +204,8 @@ func resetInput(i Input) Input {
 	i.InputText = []int{}
 	return i
 }
+
 // END OF RENDERS
-
-
-
-
-
-
 
 // START OF SLICE MANIPULATION
 func sliceContains(k string, s []string) bool {
@@ -310,9 +294,10 @@ func isIntSlice(s []int) bool {
 	}
 	return true
 }
+
 // END OF SLICE MANIPULATION
 
-func mapContains[V int | string | bool] (a string, s map[int]V) bool {
+func mapContains[V int | string | bool](a string, s map[int]V) bool {
 	i, _ := strconv.Atoi(a)
 	for k, _ := range s {
 		if i == k {
