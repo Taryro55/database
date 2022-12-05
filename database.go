@@ -77,17 +77,6 @@ func main() {
 	createMaps(studs, ids)
 	createSlices()
 
-	// a := map[int]bool{1:true, 5:false, 3:false, 2:true}
-	// b := bSortBool(a)
-	// fmt.Println(b.key, intSliceToBool(b.val))
-	a := map[int]int{55555:8, 11111:2, 32222:4, 21111:1}
-
-	fmt.Println(a)
-	fmt.Println(bSortInt(a))
-	// a := map[int]string{100:"benj", 50:"vova", 20:"eve", 12:"toto"}
-	// bSortString(a)
-	
-
 	for exec {
 		// fmt.Println(rl.GetMouseX(), rl.GetMouseY())
 		// fmt.Println(studentAgeMap, studentLastNameMap, studentNameMap, studentGradeMap, studentCitizenMap)

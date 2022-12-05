@@ -235,13 +235,15 @@ func searchInputManager(c Cooldown) Cooldown {
 		errorText = ""
 		c.OnMenu = false
 		searchFor, _ := strconv.Atoi(unixSliceToStr(searchInput.InputText))
-		index := search(searchFor)
+		index := search(searchFor, true)
 		if index != -1 {
 			moveSliceToTop(index, studentIdSlice)
+			moveSliceToTop(index, studentNameSlice)
+			moveSliceToTop(index, studentLastNameSlice)
 			moveSliceToTop(index, studentAgeSlice)
 			moveSliceToTop(index, studentGradeSlice)
 			moveSliceToTop(index, studentCitizenSlice)
-			} else {
+		} else {
 			errorSlice = append(errorSlice, "Cannot find that ID!")
 		}
 		resetInputBox()
@@ -265,9 +267,9 @@ func addInputManager(c Cooldown) Cooldown {
 		if !sliceContains(unixSliceToStr(idAddInput.InputText), studentIdSlice) {
 			idAddInput.Valid = true
 		}
-		if lname == "" || name == "" {
-			nameAddInput.Valid = false
-			lnameAddInput.Valid = false
+		if !(lname == "") || !(name == "") {
+			nameAddInput.Valid = true
+			lnameAddInput.Valid = true
 		}
 		if inBetween(age, 1, 99) {
 			ageAddInput.Valid = true
@@ -317,7 +319,7 @@ func delInputManager(c Cooldown) Cooldown {
 		errorText = ""
 		c.OnMenu = false
 		searchFor, _ := strconv.Atoi(unixSliceToStr(delInput.InputText))
-		index := search(searchFor)
+		index := search(searchFor, false)
 		if index == -1 {
 			errorSlice = append(errorSlice, "Cannot find that ID!")
 			resetInputBox()
@@ -341,7 +343,7 @@ func modInputManager(c Cooldown) Cooldown {
 		errorText = ""
 		c.OnMenu = false
 		searchFor, _ := strconv.Atoi(unixSliceToStr(oldIdModInput.InputText))
-		index := search(searchFor)
+		index := search(searchFor, false)
 		fmt.Println(studentIdSlice, len(studentIdSlice))
 		studentIdSlice[index] = unixSliceToStr(idModInput.InputText)
 		fmt.Println(studentIdSlice, len(studentIdSlice))

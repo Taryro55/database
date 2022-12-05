@@ -50,12 +50,18 @@ func bubbleSort(s []int) []int {
 	return s
 }
 
-func bSortString(m map[int]string) {
+
+// Probably the most stupid an inefficient func ever created
+// buy it works so im happy... kind of
+func bSortString(m map[int]string) /*MapMod[string]*/ {
+	// fmt.Println(m, len(m))
+	text := make([]string, 0)
 	ids := make([]int, 0)
 	stringsInt, idsStrSlice := make([][]string, 0), make([]string, 0)
 
 	for k, val := range m {
 		ids = append(ids, k)
+		text = append(text, val)
 		eachStr := make([]string, 0)
 		for _, char := range val {
 			str := ""
@@ -88,31 +94,46 @@ func bSortString(m map[int]string) {
 		}
 	}
 
-	
-	fmt.Println(firstChars, ids)
-	fmt.Println(sorted, idsStrSlice)
-	// return MapMod{sorted, idsStrSlice}
+	r := make([]string, 0)
+	for _, v := range idsStrSlice {
+		s, _ := strconv.Atoi(v)
+		r = append(r, m[s])
+	}
 
+	fmt.Println(r, idsStrSlice)
+
+	map1 := make(map[int]string, 0)
+	for i1, id := range idsStrSlice {
+		intId, _ := strconv.Atoi(id)
+		for i2, s := range r {
+			if i1 == i2 {
+				map1[intId] = s
+			}
+		}
+	}
+	for a, b := range map1 {
+		for _, v := range idsStrSlice {
+			v1, _ := strconv.Atoi(v)
+			if a == v1 {
+				fmt.Println("key: ", a, " val: ", b)
+			}
+		}
+	}	
 }
-
-
 
 // Transforms a list of strings that are numbers into a string
 // based on the abc index.
-func intstrToStrAsPerAbcID(s []string) string {
+func intToStrAsPerAbcID(s int) string {
 	r := ""
-	for _, v := range s {
-		in, _ := strconv.Atoi(v)
-		for i, run := range alphabeth {
-			if in == i {
-				r = r + strings.ToLower(string(run))
-			}
+	for i, run := range alphabeth {
+		if s == i {
+			r = r + strings.ToLower(string(run))
 		}
 	}
 	return r
 }
 
-func bSortInt(m map[int]int) MapMod {
+func bSortInt(m map[int]int) MapMod[int] {
 	inv := make(map[int]int, len(m))
 	s1, s2 := make([]int, 0), make([]int, 0)
 	sKeys, i := make([]int, len(m)), 0
@@ -132,16 +153,16 @@ func bSortInt(m map[int]int) MapMod {
 		s1, s2 = append(s1, inv[i]), append(s2, i)
 	}
 
-	return MapMod{s2, s1}
+	return MapMod[int]{s2, s1}
 }
 
 /*
 Returns a MapMod with the key = all the ids && value = index number of the list
 where the switch from false to true happens.
 */
-func bSortBool(m map[int]bool) MapMod {
+func bSortBool(m map[int]bool) MapMod[int] {
 	l, l1, l2 := make([]int, 0), make([]int, 0), make([]int, 0)
-	mm := MapMod{}
+	mm := MapMod[int]{}
 
 	for k, v := range m {
 		if !v {
@@ -244,14 +265,20 @@ func button(posx, posy, width, height int32) bool {
 	return false
 }
 
-func search(searchFor int) int {
+func search(searchFor int, b bool) int {
 	// Redeclare all maps but sorted. Then redeclare the slices with the sorted values
+	fmt.Println("")
 	searchInSorted := bubbleSort(strToIntSlice(studentIdSlice))
-	studentIdSlice = intToStrSlice(searchInSorted)
-	// ageSliceSorted := bubbleSort(strToIntSlice(studentAgeSlice))
-	studentAgeSlice = intToStrSlice(bSortInt(studentAgeMap).val)
-	studentGradeSlice = intToStrSlice(bSortInt(studentGradeMap).val)
-	studentCitizenSlice = boolSliceToString(intSliceToBool(bSortBool(studentCitizenMap).val))
+	if b {
+		studentIdSlice = intToStrSlice(searchInSorted)
+		// studentNameSlice = bSortString(studentNameMap).key
+		// studentLastNameSlice = bSortString(studentLastNameMap).key
+		fmt.Println(studentAgeSlice)
+		studentAgeSlice = intToStrSlice(bSortInt(studentAgeMap).val)
+		fmt.Println(studentAgeSlice)
+		studentGradeSlice = intToStrSlice(bSortInt(studentGradeMap).val)
+		studentCitizenSlice = boolSliceToString(intSliceToBool(bSortBool(studentCitizenMap).val))
+	}
 
 	index := binarySearch(searchFor, searchInSorted)
 	return index
