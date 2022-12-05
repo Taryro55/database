@@ -266,7 +266,7 @@ func button(posx, posy, width, height int32) bool {
 }
 
 func search(searchFor int, b bool) int {
-	// Redeclare all maps but sorted. Then redeclare the slices with the sorted values
+	// How the absolute fuck can I mess up something that was working flawlessly
 	fmt.Println("")
 	searchInSorted := bubbleSort(strToIntSlice(studentIdSlice))
 	if b {
