@@ -237,8 +237,11 @@ func searchInputManager(c Cooldown) Cooldown {
 		searchFor, _ := strconv.Atoi(unixSliceToStr(searchInput.InputText))
 		index := search(searchFor)
 		if index != -1 {
-			moveSliceToTop(index)
-		} else {
+			moveSliceToTop(index, studentIdSlice)
+			moveSliceToTop(index, studentAgeSlice)
+			moveSliceToTop(index, studentGradeSlice)
+			moveSliceToTop(index, studentCitizenSlice)
+			} else {
 			errorSlice = append(errorSlice, "Cannot find that ID!")
 		}
 		resetInputBox()

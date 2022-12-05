@@ -5,6 +5,7 @@ import (
 	"image/color"
 	"math"
 	"strconv"
+	"strings"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -49,13 +50,75 @@ func bubbleSort(s []int) []int {
 	return s
 }
 
+func bSortString(m map[int]string) {
+	ids := make([]int, 0)
+	stringsInt, idsStrSlice := make([][]string, 0), make([]string, 0)
+
+	for k, val := range m {
+		ids = append(ids, k)
+		eachStr := make([]string, 0)
+		for _, char := range val {
+			str := ""
+			for i, r := range alphabeth {
+				charIntVal := ""
+				if string(char) == strings.ToLower(string(r)) {
+					charIntVal = strconv.FormatInt(int64(i), 10)
+					str = str + charIntVal
+				}
+			}
+			eachStr = append(eachStr, str)
+		}
+		stringsInt = append(stringsInt, eachStr)
+	}
+
+	firstChars := make([]string, 0)
+	for _, v := range stringsInt {
+		firstChar := v[0]
+		firstChars = append(firstChars, firstChar)
+	}
+
+	sorted := intToStrSlice(bubbleSort(strToIntSlice(firstChars)))
+
+	for i := range sorted {
+		for index, v := range firstChars {
+			id := ids[index]
+			if sorted[i] == v {
+				idsStrSlice = append(idsStrSlice, strconv.FormatInt(int64(id), 10))
+			}
+		}
+	}
+
+	
+	fmt.Println(firstChars, ids)
+	fmt.Println(sorted, idsStrSlice)
+	// return MapMod{sorted, idsStrSlice}
+
+}
+
+
+
+// Transforms a list of strings that are numbers into a string
+// based on the abc index.
+func intstrToStrAsPerAbcID(s []string) string {
+	r := ""
+	for _, v := range s {
+		in, _ := strconv.Atoi(v)
+		for i, run := range alphabeth {
+			if in == i {
+				r = r + strings.ToLower(string(run))
+			}
+		}
+	}
+	return r
+}
+
 func bSortInt(m map[int]int) MapMod {
 	inv := make(map[int]int, len(m))
-	s1, s2 := make([]int, len(m)), make([]int, len(m))
+	s1, s2 := make([]int, 0), make([]int, 0)
 	sKeys, i := make([]int, len(m)), 0
 
 	for k, v := range m {
-		inv[v] = k
+		inv[k] = v
 	}
 
 	for k := range inv {
@@ -69,7 +132,7 @@ func bSortInt(m map[int]int) MapMod {
 		s1, s2 = append(s1, inv[i]), append(s2, i)
 	}
 
-	return MapMod{s1, s2}
+	return MapMod{s2, s1}
 }
 
 /*
@@ -83,13 +146,8 @@ func bSortBool(m map[int]bool) MapMod {
 	for k, v := range m {
 		if !v {
 			l1 = append(l1, k)
-		}
-	}
 
-	divIndx := []int{len(l1)}
-
-	for k, v := range m {
-		if v {
+		} else if v {
 			l2 = append(l2, k)
 		}
 	}
@@ -99,8 +157,17 @@ func bSortBool(m map[int]bool) MapMod {
 	l = append(l, l1...)
 	l = append(l, l2...)
 
+	divIndx := []int{len(l1)}
+	values, val := make([]int, 0), 0
+	for i, _ := range l {
+		if i == divIndx[0] {
+			val = 1
+		}
+		values = append(values, val)
+	}
+
 	mm.key = l
-	mm.val = divIndx
+	mm.val = values
 
 	return mm
 }
@@ -178,17 +245,23 @@ func button(posx, posy, width, height int32) bool {
 }
 
 func search(searchFor int) int {
+	// Redeclare all maps but sorted. Then redeclare the slices with the sorted values
 	searchInSorted := bubbleSort(strToIntSlice(studentIdSlice))
 	studentIdSlice = intToStrSlice(searchInSorted)
+	// ageSliceSorted := bubbleSort(strToIntSlice(studentAgeSlice))
+	studentAgeSlice = intToStrSlice(bSortInt(studentAgeMap).val)
+	studentGradeSlice = intToStrSlice(bSortInt(studentGradeMap).val)
+	studentCitizenSlice = boolSliceToString(intSliceToBool(bSortBool(studentCitizenMap).val))
+
 	index := binarySearch(searchFor, searchInSorted)
 	return index
 }
 
-func moveSliceToTop(index int) {
-	indexVal := studentIdSlice[index]
-	if studentIdSlice[0] != indexVal {
-		studentIdSlice[index] = studentIdSlice[0]
-		studentIdSlice[0] = indexVal
+func moveSliceToTop(index int, s []string) {
+	indexVal := s[index]
+	if s[0] != indexVal {
+		s[index] = s[0]
+		s[0] = indexVal
 	}
 }
 
@@ -208,6 +281,26 @@ func resetInput(i Input) Input {
 // END OF RENDERS
 
 // START OF SLICE MANIPULATION
+func intSliceToBool(s []int) []bool {
+	r := make([]bool, 0)
+	for _, v := range s {
+		if v == 0 {
+			r = append(r, false)
+		} else if v == 1 {
+			r = append(r, true)
+		}
+	}
+	return r
+}
+
+func boolSliceToString(s []bool) []string {
+	r := make([]string, 0)
+	for _, v := range s {
+		r = append(r, strconv.FormatBool(v))
+	}
+	return r
+}
+
 func sliceContains(k string, s []string) bool {
 	for _, v := range s {
 		if k == v {

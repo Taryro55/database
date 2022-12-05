@@ -66,7 +66,7 @@ var (
 	modCooldown      Cooldown
 
 	alphabeth      = []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-	alphabethSlice = []string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
+	// alphabethSlice = []string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
 
 	searchInput Input
 	delInput    Input
@@ -90,6 +90,7 @@ var (
 	errorLooped 	bool
 	errorText		string
 )
+
 
 type MapMod struct {
 	key []int
