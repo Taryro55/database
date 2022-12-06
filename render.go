@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"math"
 	"strconv"
 	"strings"
@@ -21,6 +22,8 @@ func update() {
 	addCooldown.Pressed = offPressed(addCooldown)
 	delCooldown.Pressed = offPressed(delCooldown)
 	modCooldown.Pressed = offPressed(modCooldown)
+
+	idCooldown.Pressed = offPressed(idCooldown)
 
 	searchCooldown = searchInputManager(searchCooldown)
 	addCooldown = addInputManager(addCooldown)
@@ -160,12 +163,16 @@ func otherRows() {
 				offMenus()
 				resetInputBox()
 				cools[i] = Cooldown{true, loops, true}
+				fmt.Println("THIS IS, ", cools[i], " and ", idCooldown.OnMenu)
+				if cools[i].OnMenu {
+					fmt.Println("GE")
+					studentIdSlice = intToStrSlice(bubbleSort(strToIntSlice(studentIdSlice)))
+					// resortString()
+				}
 			}
 		}
-		if cools[i].OnMenu {
-			// searchInput = inputBox(520, 400, 300, 50, 40, 7, false, true, "Enter ID", searchInput)
-		}
 	}
+	
 
 	rl.DrawLineEx(rl.Vector2{55, 190}, rl.Vector2{float32(width), 190}, 3, cBackground)
 
@@ -177,8 +184,6 @@ func otherRows() {
 		studentGradeSlice = drawColl(studentGradeSlice, collsX[4])
 		studentCitizenSlice = drawColl(studentCitizenSlice, collsX[5])
 	}
-
-	
 
 }
 

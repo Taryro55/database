@@ -87,7 +87,8 @@ func main() {
 
 
 	for exec {
-		fmt.Println(rl.GetMouseX(), rl.GetMouseY())
+		// fmt.Println(studentIdSlice)
+		// fmt.Println(rl.GetMouseX(), rl.GetMouseY())
 		// fmt.Println(studentAgeMap, studentLastNameMap, studentNameMap, studentGradeMap, studentCitizenMap)
 		// fmt.Println(bSortBool(studentCitizenMap))
 		update()
