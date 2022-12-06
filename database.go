@@ -77,8 +77,17 @@ func main() {
 	createMaps(studs, ids)
 	createSlices()
 
+	// a := []int{1, 7, 2}
+	// z := intToStrSlice(a)
+	// s := []string{"p", "b", "d"}
+	// b := bubbleSort(a)
+	// y := intToStrSlice(b)
+	// w := resortString(z, y, s)
+	// fmt.Println(w)
+
+
 	for exec {
-		// fmt.Println(rl.GetMouseX(), rl.GetMouseY())
+		fmt.Println(rl.GetMouseX(), rl.GetMouseY())
 		// fmt.Println(studentAgeMap, studentLastNameMap, studentNameMap, studentGradeMap, studentCitizenMap)
 		// fmt.Println(bSortBool(studentCitizenMap))
 		update()

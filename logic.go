@@ -51,6 +51,20 @@ func bubbleSort(s []int) []int {
 }
 
 
+func resortString(oldinxex, newindex, sort []string) []string {
+	r := make([]string, 0)
+	for _, v := range newindex {
+		for i2, v2 := range oldinxex {
+			if v == v2 {
+				r = append(r, sort[i2])
+			}
+		}
+		
+	}
+
+	return r
+}
+
 // Probably the most stupid an inefficient func ever created
 // buy it works so im happy... kind of
 func bSortString(m map[int]string) /*MapMod[string]*/ {
@@ -267,18 +281,25 @@ func button(posx, posy, width, height int32) bool {
 
 func search(searchFor int, b bool) int {
 	// How the absolute fuck can I mess up something that was working flawlessly
-	fmt.Println("")
+	// fmt.Println("")
+	old := make([]string, 0)
+	for _, v := range studentIdSlice {
+		old = append(old, v)
+	}
 	searchInSorted := bubbleSort(strToIntSlice(studentIdSlice))
+	// fmt.Println(studentAgeSlice)
+
 	if b {
 		studentIdSlice = intToStrSlice(searchInSorted)
-		// studentNameSlice = bSortString(studentNameMap).key
-		// studentLastNameSlice = bSortString(studentLastNameMap).key
-		fmt.Println(studentAgeSlice)
-		studentAgeSlice = intToStrSlice(bSortInt(studentAgeMap).val)
-		fmt.Println(studentAgeSlice)
-		studentGradeSlice = intToStrSlice(bSortInt(studentGradeMap).val)
-		studentCitizenSlice = boolSliceToString(intSliceToBool(bSortBool(studentCitizenMap).val))
+		studentNameSlice = resortString(old, studentIdSlice, studentNameSlice)
+		studentLastNameSlice = resortString(old, studentIdSlice, studentLastNameSlice)
+		studentAgeSlice = resortString(old, studentIdSlice, studentAgeSlice)
+		studentGradeSlice = resortString(old, studentIdSlice, studentGradeSlice)
+		studentCitizenSlice = resortString(old, studentIdSlice, studentCitizenSlice)
 	}
+	// fmt.Println(studentAgeSlice)
+
+	save()
 
 	index := binarySearch(searchFor, searchInSorted)
 	return index

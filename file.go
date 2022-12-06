@@ -34,3 +34,15 @@ func read() map[string]Student {
 
 	return s
 }
+
+func save() {
+	updateMainMap()
+	write(studentMap)
+	// fmt.Println(studentAgeSlice)
+	studentMap = read()
+	// fmt.Println(studentAgeSlice)
+	updateMainMap()
+
+	// createMaps(studentMap)
+	// createSlices()
+}

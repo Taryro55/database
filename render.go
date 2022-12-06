@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"math"
 	"strconv"
 	"strings"
@@ -146,8 +145,26 @@ func otherRows() {
 
 	collsX := getCollsX()
 	sliceOfSecondLane := []string{"Id", "First Name", "Last Name", "Age", "Grade", "Citizenship"}
-	for i, v := range sliceOfSecondLane {
-		rl.DrawText(v, collsX[i], 153, 30, rl.White)
+	ys := []int32{100, 380, 625, 780, 1020, 1240}
+	cools := []Cooldown{idCooldown, nameCooldown, lnameCooldown, ageCooldown, gradeCooldown, citizenCooldown}
+	// for i, v := range sliceOfSecondLane {
+	// 	rl.DrawText(v, collsX[i], 153, 30, rl.White)
+	// }
+
+	for i, v := range collsX {
+		if !button(v, 150, ys[i], 180) && !cools[i].Pressed {
+			rl.DrawText(sliceOfSecondLane[i], v, 153, 32, rl.White)
+		} else if button(v, 98, ys[i], 180) || cools[i].Pressed {
+			rl.DrawText(sliceOfSecondLane[i], v, 153, 32, cPrimary)
+			if !cools[i].Pressed && rl.IsMouseButtonPressed(0) {
+				offMenus()
+				resetInputBox()
+				cools[i] = Cooldown{true, loops, true}
+			}
+		}
+		if cools[i].OnMenu {
+			// searchInput = inputBox(520, 400, 300, 50, 40, 7, false, true, "Enter ID", searchInput)
+		}
 	}
 
 	rl.DrawLineEx(rl.Vector2{55, 190}, rl.Vector2{float32(width), 190}, 3, cBackground)
@@ -160,6 +177,8 @@ func otherRows() {
 		studentGradeSlice = drawColl(studentGradeSlice, collsX[4])
 		studentCitizenSlice = drawColl(studentCitizenSlice, collsX[5])
 	}
+
+	
 
 }
 
@@ -247,6 +266,7 @@ func searchInputManager(c Cooldown) Cooldown {
 			errorSlice = append(errorSlice, "Cannot find that ID!")
 		}
 		resetInputBox()
+
 	}
 	return c
 }
@@ -319,19 +339,23 @@ func delInputManager(c Cooldown) Cooldown {
 		errorText = ""
 		c.OnMenu = false
 		searchFor, _ := strconv.Atoi(unixSliceToStr(delInput.InputText))
-		index := search(searchFor, false)
+		index := search(searchFor, true)
+		// fmt.Println(studentAgeSlice)
 		if index == -1 {
 			errorSlice = append(errorSlice, "Cannot find that ID!")
 			resetInputBox()
 			return c
+		} else if index != -1 {
+			studentIdSlice = sliceStrDelete(index, studentIdSlice)
+			studentAgeSlice = sliceStrDelete(index, studentAgeSlice)
+			studentCitizenSlice = sliceStrDelete(index, studentCitizenSlice)
+			studentGradeSlice = sliceStrDelete(index, studentGradeSlice)
+			studentNameSlice = sliceStrDelete(index, studentNameSlice)
+			studentLastNameSlice = sliceStrDelete(index, studentLastNameSlice)
 		}
-		studentIdSlice = sliceStrDelete(index, studentIdSlice)
-		studentAgeSlice = sliceStrDelete(index, studentAgeSlice)
-		studentCitizenSlice = sliceStrDelete(index, studentCitizenSlice)
-		studentGradeSlice = sliceStrDelete(index, studentGradeSlice)
-		studentNameSlice = sliceStrDelete(index, studentNameSlice)
-		studentLastNameSlice = sliceStrDelete(index, studentLastNameSlice)
+		// fmt.Println(studentAgeSlice)
 		resetInputBox()
+		save()
 	}
 	return c
 }
@@ -344,9 +368,9 @@ func modInputManager(c Cooldown) Cooldown {
 		c.OnMenu = false
 		searchFor, _ := strconv.Atoi(unixSliceToStr(oldIdModInput.InputText))
 		index := search(searchFor, false)
-		fmt.Println(studentIdSlice, len(studentIdSlice))
+		// fmt.Println(studentIdSlice, len(studentIdSlice))
 		studentIdSlice[index] = unixSliceToStr(idModInput.InputText)
-		fmt.Println(studentIdSlice, len(studentIdSlice))
+		// fmt.Println(studentIdSlice, len(studentIdSlice))
 		// studentAgeSlice = sliceStrDelete(index, studentAgeSlice)
 		// studentCitizenSlice = sliceStrDelete(index, studentCitizenSlice)
 		// studentGradeSlice = sliceStrDelete(index, studentGradeSlice)
