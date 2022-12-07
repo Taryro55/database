@@ -37,36 +37,71 @@ var (
 	width         = (height / 9) * 16
 	offsetX       = width * 2 / 100
 	offsetY       = height * 3 / 100
-	recBackground rl.Rectangle
-	recForegound  rl.Rectangle
 	recStudent    rl.Rectangle
+	recBackground = rl.Rectangle{
+		X:      float32(offsetX),
+		Y:      float32(offsetY),
+		Width:  float32(width - (2 * offsetX)),
+		Height: float32(height - (2 * offsetY)),
+	}
+	recForegound = rl.Rectangle{
+		X:      float32(55),
+		Y:      float32(90),
+		Width:  float32(width),
+		Height: float32(height),
+	}
 
 	cBackground, _ = ParseHexColor("#121212")
 	cBoxed, _      = ParseHexColor("#2c2c2c")
-	cPrimary, _    = ParseHexColor("#BB86FC")
+	cPrimary, _    = ParseHexColor("#D03D56")
+	cError, _      = ParseHexColor("#CF6679")
 
 	o string
 	y int32
 
+	cooldowns	=	 []Cooldown{mainMenuCooldown,searchCooldown,addCooldown,delCooldown,modCooldown,idCooldown,nameCooldown,lnameCooldown,ageCooldown,gradeCooldown,citizenCooldown}
 	mainMenuCooldown Cooldown
 	searchCooldown   Cooldown
 	addCooldown      Cooldown
 	delCooldown      Cooldown
 	modCooldown      Cooldown
 
-	onInputBox     = false
-	textBox        = rl.Rectangle{520, 400, 300, 50}
-	letterCount    = 0
-	framesCounter  int
-	searchMenu     bool
-	inputText      []int
-	alphabeth      = []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
-	alphabethSlice = []string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
+	idCooldown      Cooldown
+	nameCooldown    Cooldown
+	lnameCooldown   Cooldown
+	ageCooldown     Cooldown
+	gradeCooldown   Cooldown
+	citizenCooldown Cooldown
+
+	alphabeth = []rune("abcdefghijklmnopqrstuvwxyz")
+	// alphabethSlice = []string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
+
+	searchInput Input
+	delInput    Input
+
+	idAddInput      Input
+	nameAddInput    Input
+	lnameAddInput   Input
+	ageAddInput     Input
+	gradeAddInput   Input
+	citizenAddInput Input
+
+	oldIdModInput   Input
+	idModInput      Input
+	nameModInput    Input
+	lnameModInput   Input
+	ageModInput     Input
+	gradeModInput   Input
+	citizenModInput Input
+
+	errorSlice  []string
+	errorLooped bool
+	errorText   string
 )
 
-type MapMod struct {
-	key []int
-	val []int
+type MapMod[T any] struct {
+	key []T
+	val []T
 }
 type Student struct {
 	FName   string
@@ -77,7 +112,15 @@ type Student struct {
 }
 
 type Cooldown struct {
-	Pressed          bool
-	SecSinceCooldown int
-	Loops            int
+	Pressed bool
+	Loops   int
+	OnMenu  bool
+}
+
+type Input struct {
+	InputText     []int
+	OnInputBox    bool
+	FramesCounter int
+	LetterCount   int
+	Valid         bool
 }
