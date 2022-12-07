@@ -22,9 +22,9 @@ go run .
 >
 >> Idea     ✓
 >>
->> GUI      X
+>> GUI      ✓
 >>
->> Popups   X
+>> Menus    ✓
 >
 >
 >
@@ -38,8 +38,8 @@ go run .
 >>>
 >>> Int             ✓
 >>>
->>> Str             X
+>>> Str             ✓
 >>
->> Binary Search    X
+>> Binary Search    ✓
 >>
->> Store to TOML    X
+>> Store to TOML    ✓
