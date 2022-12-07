@@ -43,6 +43,11 @@ func save() {
 	// fmt.Println(studentAgeSlice)
 	updateMainMap()
 
-	// createMaps(studentMap)
+	// r := make([]Student, 0)
+	// for _, v := range studentMap {
+	// 	r = append(r, v)
+	// }
+
+	// createMaps(r, strToIntSlice(studentIdSlice))
 	// createSlices()
 }

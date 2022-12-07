@@ -238,6 +238,8 @@ func otherRows() {
 					studentGradeSlice = resortString(old, studentIdSlice, studentGradeSlice)
 					citizenCooldown.OnMenu = false
 				}
+				resetInputBox()
+				save()
 			}
 		}
 	}
@@ -462,8 +464,8 @@ func modInputManager(c Cooldown) Cooldown {
 		if unixSliceToStr(citizenModInput.InputText) != "" {
 			studentCitizenSlice[index] = unixSliceToStr(citizenModInput.InputText)
 		}
-		save()
 
+		save()
 		resetInputBox()
 	}
 	return c
@@ -480,6 +482,14 @@ func resetInputBox() {
 	idAddInput = resetInput(idAddInput)
 	nameAddInput = resetInput(nameAddInput)
 	lnameAddInput = resetInput(lnameAddInput)
+
+	idModInput = resetInput(idModInput)
+	oldIdModInput = resetInput(oldIdModInput)
+	nameModInput = resetInput(nameModInput)
+	lnameModInput = resetInput(lnameModInput)
+	ageModInput = resetInput(ageModInput)
+	gradeModInput = resetInput(gradeModInput)
+	citizenModInput = resetInput(citizenModInput)
 
 	rl.SetMouseCursor(0)
 }
