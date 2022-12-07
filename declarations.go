@@ -59,6 +59,7 @@ var (
 	o string
 	y int32
 
+	cooldowns	=	 []Cooldown{mainMenuCooldown,searchCooldown,addCooldown,delCooldown,modCooldown,idCooldown,nameCooldown,lnameCooldown,ageCooldown,gradeCooldown,citizenCooldown}
 	mainMenuCooldown Cooldown
 	searchCooldown   Cooldown
 	addCooldown      Cooldown
@@ -72,7 +73,7 @@ var (
 	gradeCooldown   Cooldown
 	citizenCooldown Cooldown
 
-	alphabeth = []rune("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+	alphabeth = []rune("abcdefghijklmnopqrstuvwxyz")
 	// alphabethSlice = []string{"A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"}
 
 	searchInput Input

@@ -17,13 +17,14 @@ func update() {
 	secsSinceStart = int(math.Round(float64(loops / 60)))
 
 	defaultMenu()
+
 	mainMenuCooldown.Pressed = offPressed(mainMenuCooldown)
 	searchCooldown.Pressed = offPressed(searchCooldown)
 	addCooldown.Pressed = offPressed(addCooldown)
 	delCooldown.Pressed = offPressed(delCooldown)
 	modCooldown.Pressed = offPressed(modCooldown)
 
-	idCooldown.Pressed = offPressed(idCooldown)
+	// idCooldown.Pressed = offPressed(idCooldown)
 
 	searchCooldown = searchInputManager(searchCooldown)
 	addCooldown = addInputManager(addCooldown)
@@ -143,6 +144,23 @@ func firstRow() {
 	}
 }
 
+func updateCooldown(from int, to Cooldown) {
+	switch from {
+	case 0:
+		idCooldown.OnMenu = true
+	case 1:
+		nameCooldown.OnMenu = true
+	case 2:
+		lnameCooldown.OnMenu = true
+	case 3:
+		ageCooldown.OnMenu = true
+	case 4:
+		gradeCooldown.OnMenu = true
+	case 5:
+		citizenCooldown.OnMenu = true
+	}
+}
+
 func otherRows() {
 	rl.DrawLineEx(rl.Vector2{55, 140}, rl.Vector2{float32(width), 140}, 3, cBackground)
 
@@ -150,9 +168,6 @@ func otherRows() {
 	sliceOfSecondLane := []string{"Id", "First Name", "Last Name", "Age", "Grade", "Citizenship"}
 	ys := []int32{100, 380, 625, 780, 1020, 1240}
 	cools := []Cooldown{idCooldown, nameCooldown, lnameCooldown, ageCooldown, gradeCooldown, citizenCooldown}
-	// for i, v := range sliceOfSecondLane {
-	// 	rl.DrawText(v, collsX[i], 153, 30, rl.White)
-	// }
 
 	for i, v := range collsX {
 		if !button(v, 150, ys[i], 180) && !cools[i].Pressed {
@@ -161,18 +176,71 @@ func otherRows() {
 			rl.DrawText(sliceOfSecondLane[i], v, 153, 32, cPrimary)
 			if !cools[i].Pressed && rl.IsMouseButtonPressed(0) {
 				offMenus()
-				resetInputBox()
+				old := make([]string, 0)
+				for _, v := range studentIdSlice {
+					old = append(old, v)
+				}
 				cools[i] = Cooldown{true, loops, true}
-				fmt.Println("THIS IS, ", cools[i], " and ", idCooldown.OnMenu)
-				if cools[i].OnMenu {
-					fmt.Println("GE")
+				updateCooldown(i, idCooldown)
+
+				if idCooldown.OnMenu {
 					studentIdSlice = intToStrSlice(bubbleSort(strToIntSlice(studentIdSlice)))
-					// resortString()
+
+					studentNameSlice = resortString(old, studentIdSlice, studentNameSlice)
+					studentLastNameSlice = resortString(old, studentIdSlice, studentLastNameSlice)
+					studentAgeSlice = resortString(old, studentIdSlice, studentAgeSlice)
+					studentGradeSlice = resortString(old, studentIdSlice, studentGradeSlice)
+					studentCitizenSlice = resortString(old, studentIdSlice, studentCitizenSlice)
+					idCooldown.OnMenu = false
+				} else if nameCooldown.OnMenu {
+					save()
+					studentNameSlice, studentIdSlice = bSortString(studentNameMap).key, bSortString(studentNameMap).val
+
+					studentLastNameSlice = resortString(old, studentIdSlice, studentLastNameSlice)
+					studentAgeSlice = resortString(old, studentIdSlice, studentAgeSlice)
+					studentGradeSlice = resortString(old, studentIdSlice, studentGradeSlice)
+					studentCitizenSlice = resortString(old, studentIdSlice, studentCitizenSlice)
+					nameCooldown.OnMenu = false
+				} else if lnameCooldown.OnMenu {
+					save()
+					studentLastNameSlice, studentIdSlice = bSortString(studentLastNameMap).key, bSortString(studentLastNameMap).val
+
+					studentNameSlice = resortString(old, studentIdSlice, studentNameSlice)
+					studentAgeSlice = resortString(old, studentIdSlice, studentAgeSlice)
+					studentGradeSlice = resortString(old, studentIdSlice, studentGradeSlice)
+					studentCitizenSlice = resortString(old, studentIdSlice, studentCitizenSlice)
+					lnameCooldown.OnMenu = false
+				} else if ageCooldown.OnMenu {
+					save()
+					studentAgeSlice, studentIdSlice = intToStrSlice(bSortInt(studentAgeMap).key), intToStrSlice(bSortInt(studentAgeMap).val)
+
+					studentNameSlice = resortString(old, studentIdSlice, studentNameSlice)
+					studentLastNameSlice = resortString(old, studentIdSlice, studentLastNameSlice)
+					studentGradeSlice = resortString(old, studentIdSlice, studentGradeSlice)
+					studentCitizenSlice = resortString(old, studentIdSlice, studentCitizenSlice)
+					ageCooldown.OnMenu = false
+				} else if gradeCooldown.OnMenu {
+					save()
+					studentGradeSlice, studentIdSlice = intToStrSlice(bSortInt(studentGradeMap).key), intToStrSlice(bSortInt(studentGradeMap).val)
+
+					studentNameSlice = resortString(old, studentIdSlice, studentNameSlice)
+					studentLastNameSlice = resortString(old, studentIdSlice, studentLastNameSlice)
+					studentAgeSlice = resortString(old, studentIdSlice, studentAgeSlice)
+					studentCitizenSlice = resortString(old, studentIdSlice, studentCitizenSlice)
+					gradeCooldown.OnMenu = false
+				} else if citizenCooldown.OnMenu {
+					save()
+					studentCitizenSlice, studentIdSlice = boolSliceToString(binaryToBool(bSortBool(studentCitizenMap).val)), intToStrSlice(bSortBool(studentCitizenMap).key)
+
+					studentNameSlice = resortString(old, studentIdSlice, studentNameSlice)
+					studentLastNameSlice = resortString(old, studentIdSlice, studentLastNameSlice)
+					studentAgeSlice = resortString(old, studentIdSlice, studentAgeSlice)
+					studentGradeSlice = resortString(old, studentIdSlice, studentGradeSlice)
+					citizenCooldown.OnMenu = false
 				}
 			}
 		}
 	}
-	
 
 	rl.DrawLineEx(rl.Vector2{55, 190}, rl.Vector2{float32(width), 190}, 3, cBackground)
 
@@ -372,15 +440,30 @@ func modInputManager(c Cooldown) Cooldown {
 		errorText = ""
 		c.OnMenu = false
 		searchFor, _ := strconv.Atoi(unixSliceToStr(oldIdModInput.InputText))
-		index := search(searchFor, false)
-		// fmt.Println(studentIdSlice, len(studentIdSlice))
-		studentIdSlice[index] = unixSliceToStr(idModInput.InputText)
-		// fmt.Println(studentIdSlice, len(studentIdSlice))
-		// studentAgeSlice = sliceStrDelete(index, studentAgeSlice)
-		// studentCitizenSlice = sliceStrDelete(index, studentCitizenSlice)
-		// studentGradeSlice = sliceStrDelete(index, studentGradeSlice)
-		// studentNameSlice = sliceStrDelete(index, studentNameSlice)
-		// studentLastNameSlice = sliceStrDelete(index, studentLastNameSlice)
+		index := search(searchFor, true)
+		save()
+
+		fmt.Println(unixSliceToStr(idModInput.InputText))
+		if unixSliceToStr(idModInput.InputText) != "" {
+			studentIdSlice[index] = unixSliceToStr(idModInput.InputText)
+		}
+		if unixSliceToStr(nameModInput.InputText) != "" {
+			studentNameSlice[index] = unixSliceToStr(nameModInput.InputText)
+		}
+		if unixSliceToStr(lnameModInput.InputText) != "" {
+			studentLastNameSlice[index] = unixSliceToStr(lnameModInput.InputText)
+		}
+		if unixSliceToStr(ageModInput.InputText) != "" {
+			studentAgeSlice[index] = unixSliceToStr(ageModInput.InputText)
+		}
+		if unixSliceToStr(gradeModInput.InputText) != "" {
+			studentGradeSlice[index] = unixSliceToStr(gradeModInput.InputText)
+		}
+		if unixSliceToStr(citizenModInput.InputText) != "" {
+			studentCitizenSlice[index] = unixSliceToStr(citizenModInput.InputText)
+		}
+		save()
+
 		resetInputBox()
 	}
 	return c
@@ -402,13 +485,14 @@ func resetInputBox() {
 }
 
 func defaultMenu() {
-	if !mainMenuCooldown.OnMenu && !searchCooldown.OnMenu && !addCooldown.OnMenu && !delCooldown.OnMenu && !modCooldown.OnMenu {
+	if !mainMenuCooldown.OnMenu && !searchCooldown.OnMenu && !addCooldown.OnMenu && !delCooldown.OnMenu && !modCooldown.OnMenu && !idCooldown.OnMenu && !nameCooldown.OnMenu && !lnameCooldown.OnMenu && !ageCooldown.OnMenu && !gradeCooldown.OnMenu && !citizenCooldown.OnMenu {
 		mainMenuCooldown.OnMenu = true
 	}
 }
 
 func offMenus() {
 	mainMenuCooldown.OnMenu, searchCooldown.OnMenu, addCooldown.OnMenu, delCooldown.OnMenu, modCooldown.OnMenu = false, false, false, false, false
+	idCooldown.OnMenu, nameCooldown.OnMenu, lnameCooldown.OnMenu, ageCooldown.OnMenu, gradeCooldown.OnMenu, citizenCooldown.OnMenu = false, false, false, false, false, false
 }
 
 func offPressed(c Cooldown) bool {

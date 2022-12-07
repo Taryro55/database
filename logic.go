@@ -50,7 +50,6 @@ func bubbleSort(s []int) []int {
 	return s
 }
 
-
 func resortString(oldinxex, newindex, sort []string) []string {
 	r := make([]string, 0)
 	for _, v := range newindex {
@@ -59,7 +58,7 @@ func resortString(oldinxex, newindex, sort []string) []string {
 				r = append(r, sort[i2])
 			}
 		}
-		
+
 	}
 
 	return r
@@ -67,7 +66,7 @@ func resortString(oldinxex, newindex, sort []string) []string {
 
 // Probably the most stupid an inefficient func ever created
 // buy it works so im happy... kind of
-func bSortString(m map[int]string) /*MapMod[string]*/ {
+func bSortString(m map[int]string) MapMod[string] {
 	// fmt.Println(m, len(m))
 	text := make([]string, 0)
 	ids := make([]int, 0)
@@ -114,25 +113,26 @@ func bSortString(m map[int]string) /*MapMod[string]*/ {
 		r = append(r, m[s])
 	}
 
-	fmt.Println(r, idsStrSlice)
 
-	map1 := make(map[int]string, 0)
-	for i1, id := range idsStrSlice {
-		intId, _ := strconv.Atoi(id)
-		for i2, s := range r {
-			if i1 == i2 {
-				map1[intId] = s
-			}
-		}
-	}
-	for a, b := range map1 {
-		for _, v := range idsStrSlice {
-			v1, _ := strconv.Atoi(v)
-			if a == v1 {
-				fmt.Println("key: ", a, " val: ", b)
-			}
-		}
-	}	
+	// map1 := make(map[int]string, 0)
+	// for i1, id := range idsStrSlice {
+	// 	intId, _ := strconv.Atoi(id)
+	// 	for i2, s := range r {
+	// 		if i1 == i2 {
+	// 			map1[intId] = s
+	// 		}
+	// 	}
+	// }
+	// for a, b := range map1 {
+	// 	for _, v := range idsStrSlice {
+	// 		v1, _ := strconv.Atoi(v)
+	// 		if a == v1 {
+	// 			fmt.Println("key: ", a, " val: ", b)
+	// 		}
+	// 	}
+	// }
+
+	return MapMod[string]{r, idsStrSlice}
 }
 
 // Transforms a list of strings that are numbers into a string
@@ -149,25 +149,31 @@ func intToStrAsPerAbcID(s int) string {
 
 func bSortInt(m map[int]int) MapMod[int] {
 	inv := make(map[int]int, len(m))
-	s1, s2 := make([]int, 0), make([]int, 0)
-	sKeys, i := make([]int, len(m)), 0
+	s1 := make([]int, 0)
+	sVals, sKeys, i := make([]int, len(m)), make([]int, len(m)), 0
 
 	for k, v := range m {
 		inv[k] = v
 	}
 
-	for k := range inv {
+	for k, v := range inv {
 		sKeys[i] = k
+		sVals[i] = v
 		i++
 	}
 
-	bSorted := bubbleSort(sKeys)
+	bSorted := bubbleSort(sVals)
 
-	for _, i := range bSorted {
-		s1, s2 = append(s1, inv[i]), append(s2, i)
+	for _, v := range bSorted {
+		for i, v2 := range m {
+			if v == v2 {
+				s1 = append(s1, i)
+				break
+			}
+		}
 	}
 
-	return MapMod[int]{s2, s1}
+	return MapMod[int]{bSorted, s1}
 }
 
 /*
@@ -205,6 +211,18 @@ func bSortBool(m map[int]bool) MapMod[int] {
 	mm.val = values
 
 	return mm
+}
+
+func binaryToBool(s []int) []bool {
+	r := make([]bool, 0)
+	for _, v := range s {
+		if v == 0 {
+			r = append(r, false)
+		} else if v == 1 {
+			r = append(r, true)
+		}
+	}
+	return r
 }
 
 // END OF SORTING
